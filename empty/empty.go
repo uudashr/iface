@@ -49,7 +49,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		}
 
 		if len(ifaceType.Methods.List) == 0 {
-			pass.Reportf(ts.Pos(), "interface %s has no methods, providing no meaningful functionality", ts.Name.Name)
+			pass.Reportf(ts.Pos(), "interface %s is empty, providing no meaningful behavior", ts.Name.Name)
 		}
 	})
 
