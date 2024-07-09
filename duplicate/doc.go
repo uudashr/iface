@@ -1,3 +1,3 @@
-// Package duplicate defines an Analyzer that detetcs duplicates within
+// Package duplicate defines an Analyzer that detects duplicates within
 // the package.
 package duplicate

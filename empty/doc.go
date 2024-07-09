@@ -1,2 +1,2 @@
-// Package empty defines an Analyzer that detetcs empty interfaces.
+// Package empty defines an Analyzer that detects empty interfaces.
 package empty
