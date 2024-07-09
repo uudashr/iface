@@ -1,7 +1,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/uudashr/iface.svg)](https://pkg.go.dev/github.com/uudashr/iface)
 
 # iface
-`iface` is a linter that analyze the use of interfaces in Go code to align with best practices.
+`iface` is a linter designed to enhance Go code quality by ensuring proper usage of interfaces. It helps developers align with best practices, avoid common mistakes, and eliminate anti-patterns.
 
 It consists of several analyzers :
 1. `empty`: Finds empty interfaces.
