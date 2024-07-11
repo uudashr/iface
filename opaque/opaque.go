@@ -29,192 +29,258 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	// Find function declarations that return an interface
+
 	nodeFilter := []ast.Node{
 		(*ast.FuncDecl)(nil),
 	}
 
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
-		fn, ok := n.(*ast.FuncDecl)
-		if !ok {
+		funcDecl := n.(*ast.FuncDecl)
+
+		if funcDecl.Recv != nil {
+			// skip methods
 			return
 		}
 
-		if fn.Type.Results == nil {
-			return
-		}
-
-		if fn.Recv != nil {
+		if funcDecl.Type.Results == nil {
+			// skip functions without return values
 			return
 		}
 
 		if debug {
-			fmt.Println("Function declaration:", fn.Name.Name, fn.Pos(), len(fn.Type.Results.List))
+			fmt.Printf("Function declaration %s\n", funcDecl.Name.Name)
 		}
 
-		returnTypes := make([]types.Type, len(fn.Type.Results.List))
-		hasIfaceReturnType := false
-
-		for i, field := range fn.Type.Results.List {
-			if debug {
-				fmt.Printf(" [%d] Field: %v %v\n", i, field.Type, reflect.TypeOf(field.Type))
-			}
-
-			typ := pass.TypesInfo.TypeOf(field.Type)
-			if typ == nil {
-				continue
-			}
-
-			returnTypes[i] = typ
-
-			_, ok := typ.Underlying().(*types.Interface)
-			if !ok {
-				continue
-			}
-
-			if debug {
-				fmt.Printf("     Return type is an interface, samePackage: %t\n", fromSamePackage(pass, typ))
-			}
-
-			hasIfaceReturnType = true
-		}
+		retLen := len(funcDecl.Type.Results.List)
 
 		if debug {
-			fmt.Println(" Return types:", returnTypes, hasIfaceReturnType)
+			fmt.Printf(" Results %d\n", retLen)
 		}
 
-		if !hasIfaceReturnType {
+		// Pre-check, only function that has interface return type will be processed
+		var hasInterfaceReturnType bool
+
+		for i, result := range funcDecl.Type.Results.List {
+			resType := result.Type
+			typ := pass.TypesInfo.TypeOf(resType)
+
+			if debug {
+				fmt.Printf("  [%d] %v %v | %v %v interface=%t\n", i, resType, reflect.TypeOf(resType), typ, reflect.TypeOf(typ), types.IsInterface(typ))
+			}
+
+			if types.IsInterface(typ) && !hasInterfaceReturnType {
+				hasInterfaceReturnType = true
+			}
+		}
+
+		if !hasInterfaceReturnType {
+			// skip, since it has no interface return type
 			return
 		}
 
-		concreteStmtTypes := make([]map[types.Type]struct{}, len(fn.Type.Results.List))
-		for i := range concreteStmtTypes {
-			concreteStmtTypes[i] = make(map[types.Type]struct{})
+		// Collect types on every return statement
+		retStmtTypes := make([]map[types.Type]struct{}, retLen)
+		for i := range retLen {
+			retStmtTypes[i] = make(map[types.Type]struct{})
 		}
 
-		// Inspect return statements within the function body
-		ast.Inspect(fn.Body, func(n ast.Node) bool {
+		ast.Inspect(funcDecl.Body, func(n ast.Node) bool {
+			// fmt.Printf("  node: %v %v\n", n, reflect.TypeOf(n))
 			switch n := n.(type) {
 			case *ast.FuncLit:
+				// ignore nested functions
 				return false
 			case *ast.ReturnStmt:
 				if debug {
-					fmt.Println(" Return statement:", n.Pos(), len(n.Results))
+					fmt.Printf("  Return statements %v len=%d\n", n.Results, len(n.Results))
 				}
 
-				for i, exp := range n.Results {
-					if i >= len(returnTypes) {
-						continue
-					}
-
-					stmtTyp := pass.TypesInfo.TypeOf(exp)
-					if stmtTyp == nil {
-						continue
-					}
-
+				for i, result := range n.Results {
 					if debug {
-						fmt.Printf("  [%d] %v %v %v\n", i, reflect.TypeOf(exp), stmtTyp.Underlying(), reflect.TypeOf(stmtTyp.Underlying()))
+						fmt.Printf("   [%d] %v %v\n", i, result, reflect.TypeOf(result))
 					}
 
-					_, ifaceRetType := returnTypes[i].Underlying().(*types.Interface)
-					if !ifaceRetType {
-						continue
-					}
+					switch res := result.(type) {
+					case *ast.CallExpr:
+						if debug {
+							fmt.Printf("       CallExpr Fun: %v %v\n", res.Fun, reflect.TypeOf(res.Fun))
+						}
 
-					_, ok = stmtTyp.Underlying().(*types.Interface)
-					if ok {
-						continue
-					}
+						typ := pass.TypesInfo.TypeOf(res)
+						switch typ := typ.(type) {
+						case *types.Tuple:
+							for i := range typ.Len() {
+								v := typ.At(i)
+								vTyp := v.Type()
+								retStmtTypes[i][vTyp] = struct{}{}
 
-					basic, ok := stmtTyp.(*types.Basic)
-					if ok && basic.Kind() == types.UntypedNil {
-						// ignore nil return statement
-						continue
-					}
+								if debug {
+									fmt.Printf("          Tuple [%d]: %v %v | %v %v interface=%t\n", i, v, reflect.TypeOf(v), vTyp, reflect.TypeOf(vTyp), types.IsInterface(vTyp))
+								}
+							}
+						default:
+							retStmtTypes[i][typ] = struct{}{}
+						}
 
-					_, ok = stmtTyp.Underlying().(*types.Signature)
-					if ok {
-						// ignore function type return statement
-						continue
-					}
+					case *ast.Ident:
+						if debug {
+							fmt.Printf("       Ident: %v %v\n", res, reflect.TypeOf(res))
+						}
 
-					concreteStmtTypes[i][stmtTyp] = struct{}{}
+						typ := pass.TypesInfo.TypeOf(res)
 
-					if debug {
-						fmt.Printf("   Return statement concrete %v, return type is interface\n", stmtTyp)
+						if debug {
+							fmt.Printf("        Ident type: %v %v interface=%t\n", typ, reflect.TypeOf(typ), types.IsInterface(typ))
+						}
+
+						retStmtTypes[i][typ] = struct{}{}
+					case *ast.UnaryExpr:
+						if debug {
+							fmt.Printf("       UnaryExpr X: %v \n", res.X)
+						}
+
+						typ := pass.TypesInfo.TypeOf(res)
+
+						if debug {
+							fmt.Printf("        UnaryExpr type: %v %v interface=%t\n", typ, reflect.TypeOf(typ), types.IsInterface(typ))
+						}
+
+						retStmtTypes[i][typ] = struct{}{}
+					default:
+						if debug {
+							fmt.Printf("       Unknown: %v %v\n", res, reflect.TypeOf(res))
+						}
+
+						typ := pass.TypesInfo.TypeOf(res)
+						retStmtTypes[i][typ] = struct{}{}
 					}
 				}
+
+				return false
+			default:
+				return true
 			}
-
-			return true
 		})
 
-		for i, retType := range returnTypes {
-			_, ifaceRetType := retType.Underlying().(*types.Interface)
-			if !ifaceRetType {
+		// Compare func return types with the return statement types
+		for i, result := range funcDecl.Type.Results.List {
+			resType := result.Type
+			typ := pass.TypesInfo.TypeOf(resType)
+
+			// Check return type
+			if !types.IsInterface(typ) {
+				// it is a concrete type
 				continue
 			}
 
-			if !fromSamePackage(pass, retType) {
+			if typ.String() == "error" {
+				// very common case to have return type error
 				continue
 			}
 
-			concretes := len(concreteStmtTypes[i])
-			if concretes == 0 {
-				// no concrete statement return
+			if !fromSamePackage(pass, typ) {
+				// ignore interface from other package
 				continue
 			}
 
-			if concretes > 1 {
-				// has multiple concrete statement returns
+			// Check statement type
+			stmtTyps := retStmtTypes[i]
+
+			stmtTypsSize := len(stmtTyps)
+			if stmtTypsSize > 1 {
+				// it has multiple implementation
 				continue
 			}
 
-			var concrete types.Type
-			for c := range concreteStmtTypes[i] {
-				concrete = c
+			if stmtTypsSize != 1 {
+				panic("expect stmtTypsSize equal to 1")
 			}
 
-			// has a single concrete statement return
-			pos := fn.Type.Results.List[i].Pos()
+			var stmtTyp types.Type
+			for t := range stmtTyps {
+				stmtTyp = t
+				// expect only one, we don't have to break it
+			}
 
-			pass.Reportf(pos, "%s function return %s at the %s result, abstract a single concrete implementation of %s",
-				fn.Name.Name, removePkgPrefix(retType.String()), toHumanOrdinal(i), concrete)
+			if types.IsInterface(stmtTyp) {
+				// not concrete type, skip
+				continue
+			}
+
+			if debug {
+				fmt.Printf("stmtType: %v %v | %v %v\n", stmtTyp, reflect.TypeOf(stmtTyp), stmtTyp.Underlying(), reflect.TypeOf(stmtTyp.Underlying()))
+			}
+
+			switch stmtTyp := stmtTyp.(type) {
+			case *types.Basic:
+				if stmtTyp.Kind() == types.UntypedNil {
+					// ignore nil
+					continue
+				}
+			case *types.Named:
+				if _, ok := stmtTyp.Underlying().(*types.Signature); ok {
+					// skip function type
+					continue
+				}
+			}
+
+			retTypeName := typ.String()
+			if fromSamePackage(pass, typ) {
+				retTypeName = removePkgPrefix(retTypeName)
+			}
+
+			stmtTypName := stmtTyp.String()
+			if fromSamePackage(pass, stmtTyp) {
+				stmtTypName = removePkgPrefix(stmtTypName)
+			}
+
+			pass.Reportf(result.Pos(),
+				"%s function return %s interface at the %s result, abstract a single concrete implementation of %s",
+				funcDecl.Name.Name,
+				retTypeName,
+				positionStr(i),
+				stmtTypName)
 		}
 	})
 
 	return nil, nil
 }
 
-func fromSamePackage(pass *analysis.Pass, typ types.Type) bool {
-	currentPkg := pass.Pkg
-
-	named, ok := typ.(*types.Named)
-	if !ok {
-		return false
-	}
-
-	ifacePkg := named.Obj().Pkg()
-
-	return currentPkg == ifacePkg
-}
-
-func removePkgPrefix(typeStr string) string {
-	if lastDot := strings.LastIndex(typeStr, "."); lastDot != -1 {
-		return typeStr[lastDot+1:]
-	}
-
-	return typeStr
-}
-
-func toHumanOrdinal(index int) string {
-	switch index {
+func positionStr(i int) string {
+	switch i {
 	case 0:
 		return "1st"
 	case 1:
 		return "2nd"
 	case 2:
 		return "3rd"
+	default:
+		return fmt.Sprintf("%dth", i+1)
+	}
+}
+
+func fromSamePackage(pass *analysis.Pass, typ types.Type) bool {
+	switch typ := typ.(type) {
+	case *types.Named:
+		currentPkg := pass.Pkg
+		ifacePkg := typ.Obj().Pkg()
+
+		return currentPkg == ifacePkg
+	case *types.Pointer:
+		return fromSamePackage(pass, typ.Elem())
+	default:
+		return false
+	}
+}
+
+func removePkgPrefix(typeStr string) string {
+	if typeStr[0] == '*' {
+		return "*" + removePkgPrefix(typeStr[1:])
 	}
 
-	return fmt.Sprintf("%dth", index+1)
+	if lastDot := strings.LastIndex(typeStr, "."); lastDot != -1 {
+		return typeStr[lastDot+1:]
+	}
+
+	return typeStr
 }
