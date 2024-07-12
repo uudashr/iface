@@ -21,6 +21,7 @@ func init() {
 var Analyzer = &analysis.Analyzer{
 	Name:     "opaque",
 	Doc:      "finds the interfaces that is used to abstract a single concrete implementation only",
+	URL:      "https://pkg.go.dev/github.com/uudashr/iface/opaque",
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 	Run:      run,
 }

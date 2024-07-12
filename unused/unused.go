@@ -19,6 +19,7 @@ func init() {
 var Analyzer = &analysis.Analyzer{
 	Name:     "unused",
 	Doc:      "finds unused interfaces within the package",
+	URL:      "https://pkg.go.dev/github.com/uudashr/iface/unused",
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 	Run:      run,
 }

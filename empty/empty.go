@@ -19,6 +19,7 @@ func init() {
 var Analyzer = &analysis.Analyzer{
 	Name:     "empty",
 	Doc:      "finds empty interfaces",
+	URL:      "https://pkg.go.dev/github.com/uudashr/iface/empty",
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 	Run:      run,
 }

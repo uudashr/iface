@@ -21,6 +21,7 @@ func init() {
 var Analyzer = &analysis.Analyzer{
 	Name:     "duplicate",
 	Doc:      "finds duplicate interfaces within the package",
+	URL:      "https://pkg.go.dev/github.com/uudashr/iface/duplicate",
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 	Run:      run,
 }
