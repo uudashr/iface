@@ -1,6 +1,10 @@
 package mask
 
-import "context"
+import (
+	"context"
+	"errors"
+	"strings"
+)
 
 type Doer interface {
 	Do()
@@ -100,4 +104,13 @@ func NewContext() context.Context {
 
 type myContextImpl struct {
 	context.Context
+}
+
+func SplitCompleteVer(ver string) (major, minor, patch string, err error) {
+	parts := strings.Split(ver, ".")
+	if len(parts) != 3 {
+		return "", "", "", errors.New("invalid complete version")
+	}
+
+	return parts[0], parts[1], parts[2], nil
 }

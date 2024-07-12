@@ -24,7 +24,7 @@ func StartSpanFromContextWithTracer(ctx context.Context, tracer Tracer) (Span, e
 	return nil, nil
 }
 
-func StartSpanFromContext2(ctx context.Context) (Span, error) { // want "StartSpanFromContext2 function return Server at the 1st result, abstract a single concrete implementation of \\*a\\.span"
+func StartSpanFromContext2(ctx context.Context) (Span, error) { // want "StartSpanFromContext2 function return Span interface at the 1st result, abstract a single concrete implementation of \\*span"
 	return startSpanFromContextWithTracer(ctx, GlobalTracer)
 }
 

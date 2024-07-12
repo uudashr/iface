@@ -51,26 +51,37 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			fmt.Printf("Function declaration %s\n", funcDecl.Name.Name)
 		}
 
-		retLen := len(funcDecl.Type.Results.List)
-
 		if debug {
-			fmt.Printf(" Results %d\n", retLen)
+			fmt.Printf(" Results len=%d\n", len(funcDecl.Type.Results.List))
 		}
 
 		// Pre-check, only function that has interface return type will be processed
 		var hasInterfaceReturnType bool
 
+		var outCount int
+
 		for i, result := range funcDecl.Type.Results.List {
+			outInc := 1
+			if namesLen := len(result.Names); namesLen > 0 {
+				outInc = namesLen
+			}
+
+			outCount += outInc
+
 			resType := result.Type
 			typ := pass.TypesInfo.TypeOf(resType)
 
 			if debug {
-				fmt.Printf("  [%d] %v %v | %v %v interface=%t\n", i, resType, reflect.TypeOf(resType), typ, reflect.TypeOf(typ), types.IsInterface(typ))
+				fmt.Printf("  [%d] len=%d %v %v %v | %v %v interface=%t\n", i, len(result.Names), result.Names, resType, reflect.TypeOf(resType), typ, reflect.TypeOf(typ), types.IsInterface(typ))
 			}
 
 			if types.IsInterface(typ) && !hasInterfaceReturnType {
 				hasInterfaceReturnType = true
 			}
+		}
+
+		if debug {
+			fmt.Printf("  hasInterface=%t outCount=%d\n", hasInterfaceReturnType, outCount)
 		}
 
 		if !hasInterfaceReturnType {
@@ -79,13 +90,12 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		}
 
 		// Collect types on every return statement
-		retStmtTypes := make([]map[types.Type]struct{}, retLen)
-		for i := range retLen {
+		retStmtTypes := make([]map[types.Type]struct{}, outCount)
+		for i := range retStmtTypes {
 			retStmtTypes[i] = make(map[types.Type]struct{})
 		}
 
 		ast.Inspect(funcDecl.Body, func(n ast.Node) bool {
-			// fmt.Printf("  node: %v %v\n", n, reflect.TypeOf(n))
 			switch n := n.(type) {
 			case *ast.FuncLit:
 				// ignore nested functions
@@ -163,9 +173,19 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		})
 
 		// Compare func return types with the return statement types
-		for i, result := range funcDecl.Type.Results.List {
+		var nextIdx int
+
+		for _, result := range funcDecl.Type.Results.List {
 			resType := result.Type
 			typ := pass.TypesInfo.TypeOf(resType)
+
+			consumeCount := 1
+			if len(result.Names) > 0 {
+				consumeCount = len(result.Names)
+			}
+
+			currentIdx := nextIdx
+			nextIdx += consumeCount
 
 			// Check return type
 			if !types.IsInterface(typ) {
@@ -184,7 +204,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			}
 
 			// Check statement type
-			stmtTyps := retStmtTypes[i]
+			stmtTyps := retStmtTypes[currentIdx]
 
 			stmtTypsSize := len(stmtTyps)
 			if stmtTypsSize > 1 {
@@ -192,14 +212,15 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				continue
 			}
 
-			if stmtTypsSize != 1 {
-				panic("expect stmtTypsSize equal to 1")
+			if stmtTypsSize == 0 {
+				// function use named return value, while return statement is empty
+				continue
 			}
 
 			var stmtTyp types.Type
 			for t := range stmtTyps {
-				stmtTyp = t
 				// expect only one, we don't have to break it
+				stmtTyp = t
 			}
 
 			if types.IsInterface(stmtTyp) {
@@ -238,7 +259,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				"%s function return %s interface at the %s result, abstract a single concrete implementation of %s",
 				funcDecl.Name.Name,
 				retTypeName,
-				positionStr(i),
+				positionStr(currentIdx),
 				stmtTypName)
 		}
 	})
@@ -246,8 +267,8 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
-func positionStr(i int) string {
-	switch i {
+func positionStr(idx int) string {
+	switch idx {
 	case 0:
 		return "1st"
 	case 1:
@@ -255,7 +276,7 @@ func positionStr(i int) string {
 	case 2:
 		return "3rd"
 	default:
-		return fmt.Sprintf("%dth", i+1)
+		return fmt.Sprintf("%dth", idx+1)
 	}
 }
 
