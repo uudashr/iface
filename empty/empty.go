@@ -44,6 +44,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 
 		if debug {
 			fmt.Println("Interface type declaration:", ts.Name.Name, ts.Pos(), len(ifaceType.Methods.List))
+
 			for i, f := range ifaceType.Methods.List {
 				fmt.Printf(" [%d] %v %v\n", i, f.Names, reflect.TypeOf(f.Type))
 			}
