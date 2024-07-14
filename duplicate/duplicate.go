@@ -12,21 +12,29 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-var debug = false
+// Analyzer is the duplicate interface analyzer.
+var Analyzer = newAnalyzer()
 
-func init() {
-	Analyzer.Flags.BoolVar(&debug, "debug", false, "enable debug mode")
+func newAnalyzer() *analysis.Analyzer {
+	r := runner{}
+
+	analyzer := &analysis.Analyzer{
+		Name:     "duplicate",
+		Doc:      "finds duplicate interfaces within the package",
+		URL:      "https://pkg.go.dev/github.com/uudashr/iface/duplicate",
+		Requires: []*analysis.Analyzer{inspect.Analyzer},
+		Run:      r.run,
+	}
+	analyzer.Flags.BoolVar(&r.debug, "debug", false, "enable debug mode")
+
+	return analyzer
 }
 
-var Analyzer = &analysis.Analyzer{
-	Name:     "duplicate",
-	Doc:      "finds duplicate interfaces within the package",
-	URL:      "https://pkg.go.dev/github.com/uudashr/iface/duplicate",
-	Requires: []*analysis.Analyzer{inspect.Analyzer},
-	Run:      run,
+type runner struct {
+	debug bool
 }
 
-func run(pass *analysis.Pass) (interface{}, error) {
+func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	// Collect interface type declarations
@@ -48,7 +56,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			return
 		}
 
-		if debug {
+		if r.debug {
 			fmt.Println("Interface declaration:", ts.Name.Name, ts.Pos(), len(ifaceType.Methods.List))
 
 			for i, field := range ifaceType.Methods.List {
@@ -89,7 +97,7 @@ Loop:
 				continue
 			}
 
-			if debug {
+			if r.debug {
 				fmt.Println("Duplicate interface:", name, "and", otherName)
 			}
 

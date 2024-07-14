@@ -10,21 +10,30 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-var debug = false
+// Analyzer is the unused interface analyzer.
+var Analyzer = newAnalyzer()
 
-func init() {
-	Analyzer.Flags.BoolVar(&debug, "debug", false, "enable debug mode")
+func newAnalyzer() *analysis.Analyzer {
+	r := runner{}
+
+	analyzer := &analysis.Analyzer{
+		Name:     "unused",
+		Doc:      "finds unused interfaces within the package",
+		URL:      "https://pkg.go.dev/github.com/uudashr/iface/unused",
+		Requires: []*analysis.Analyzer{inspect.Analyzer},
+		Run:      r.run,
+	}
+
+	analyzer.Flags.BoolVar(&r.debug, "debug", false, "enable debug mode")
+
+	return analyzer
 }
 
-var Analyzer = &analysis.Analyzer{
-	Name:     "unused",
-	Doc:      "finds unused interfaces within the package",
-	URL:      "https://pkg.go.dev/github.com/uudashr/iface/unused",
-	Requires: []*analysis.Analyzer{inspect.Analyzer},
-	Run:      run,
+type runner struct {
+	debug bool
 }
 
-func run(pass *analysis.Pass) (interface{}, error) {
+func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	// Collect all interface type declarations
@@ -45,14 +54,14 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			return
 		}
 
-		if debug {
+		if r.debug {
 			fmt.Println("Interface type declaration:", ts.Name.Name, ts.Pos())
 		}
 
 		ifaceDecls[ts.Name.Name] = ts.Pos()
 	})
 
-	if debug {
+	if r.debug {
 		var ifaceNames []string
 		for name := range ifaceDecls {
 			ifaceNames = append(ifaceNames, name)

@@ -12,21 +12,30 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-var debug = false
+// Analyzer is the opaque interface analyzer.
+var Analyzer = newAnalyzer()
 
-func init() {
-	Analyzer.Flags.BoolVar(&debug, "debug", false, "enable debug mode")
+func newAnalyzer() *analysis.Analyzer {
+	r := runner{}
+
+	analyzer := &analysis.Analyzer{
+		Name:     "opaque",
+		Doc:      "finds the interfaces that is used to abstract a single concrete implementation only",
+		URL:      "https://pkg.go.dev/github.com/uudashr/iface/opaque",
+		Requires: []*analysis.Analyzer{inspect.Analyzer},
+		Run:      r.run,
+	}
+
+	analyzer.Flags.BoolVar(&r.debug, "debug", false, "enable debug mode")
+
+	return analyzer
 }
 
-var Analyzer = &analysis.Analyzer{
-	Name:     "opaque",
-	Doc:      "finds the interfaces that is used to abstract a single concrete implementation only",
-	URL:      "https://pkg.go.dev/github.com/uudashr/iface/opaque",
-	Requires: []*analysis.Analyzer{inspect.Analyzer},
-	Run:      run,
+type runner struct {
+	debug bool
 }
 
-func run(pass *analysis.Pass) (interface{}, error) {
+func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	// Find function declarations that return an interface
@@ -48,11 +57,8 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			return
 		}
 
-		if debug {
+		if r.debug {
 			fmt.Printf("Function declaration %s\n", funcDecl.Name.Name)
-		}
-
-		if debug {
 			fmt.Printf(" Results len=%d\n", len(funcDecl.Type.Results.List))
 		}
 
@@ -72,7 +78,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			resType := result.Type
 			typ := pass.TypesInfo.TypeOf(resType)
 
-			if debug {
+			if r.debug {
 				fmt.Printf("  [%d] len=%d %v %v %v | %v %v interface=%t\n", i, len(result.Names), result.Names, resType, reflect.TypeOf(resType), typ, reflect.TypeOf(typ), types.IsInterface(typ))
 			}
 
@@ -81,7 +87,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			}
 		}
 
-		if debug {
+		if r.debug {
 			fmt.Printf("  hasInterface=%t outCount=%d\n", hasInterfaceReturnType, outCount)
 		}
 
@@ -102,18 +108,18 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				// ignore nested functions
 				return false
 			case *ast.ReturnStmt:
-				if debug {
+				if r.debug {
 					fmt.Printf("  Return statements %v len=%d\n", n.Results, len(n.Results))
 				}
 
 				for i, result := range n.Results {
-					if debug {
+					if r.debug {
 						fmt.Printf("   [%d] %v %v\n", i, result, reflect.TypeOf(result))
 					}
 
 					switch res := result.(type) {
 					case *ast.CallExpr:
-						if debug {
+						if r.debug {
 							fmt.Printf("       CallExpr Fun: %v %v\n", res.Fun, reflect.TypeOf(res.Fun))
 						}
 
@@ -125,7 +131,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 								vTyp := v.Type()
 								retStmtTypes[i][vTyp] = struct{}{}
 
-								if debug {
+								if r.debug {
 									fmt.Printf("          Tuple [%d]: %v %v | %v %v interface=%t\n", i, v, reflect.TypeOf(v), vTyp, reflect.TypeOf(vTyp), types.IsInterface(vTyp))
 								}
 							}
@@ -134,31 +140,31 @@ func run(pass *analysis.Pass) (interface{}, error) {
 						}
 
 					case *ast.Ident:
-						if debug {
+						if r.debug {
 							fmt.Printf("       Ident: %v %v\n", res, reflect.TypeOf(res))
 						}
 
 						typ := pass.TypesInfo.TypeOf(res)
 
-						if debug {
+						if r.debug {
 							fmt.Printf("        Ident type: %v %v interface=%t\n", typ, reflect.TypeOf(typ), types.IsInterface(typ))
 						}
 
 						retStmtTypes[i][typ] = struct{}{}
 					case *ast.UnaryExpr:
-						if debug {
+						if r.debug {
 							fmt.Printf("       UnaryExpr X: %v \n", res.X)
 						}
 
 						typ := pass.TypesInfo.TypeOf(res)
 
-						if debug {
+						if r.debug {
 							fmt.Printf("        UnaryExpr type: %v %v interface=%t\n", typ, reflect.TypeOf(typ), types.IsInterface(typ))
 						}
 
 						retStmtTypes[i][typ] = struct{}{}
 					default:
-						if debug {
+						if r.debug {
 							fmt.Printf("       Unknown: %v %v\n", res, reflect.TypeOf(res))
 						}
 
@@ -229,7 +235,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				continue
 			}
 
-			if debug {
+			if r.debug {
 				fmt.Printf("stmtType: %v %v | %v %v\n", stmtTyp, reflect.TypeOf(stmtTyp), stmtTyp.Underlying(), reflect.TypeOf(stmtTyp.Underlying()))
 			}
 
