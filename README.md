@@ -5,8 +5,8 @@
 
 It consists of several analyzers :
 1. `empty`: Finds empty interfaces.
-2. `unused`: Finds unused interfaces within the package.
-3. `duplicate`: Finds duplicate interfaces within the package.
+2. `unused`: Finds interfaces that are not used anywhere in the same package where the interface is defined.
+3. `duplicate`: Finds interfaces in the same package that have identical method sets.
 4. `opaque`: Find the interfaces that is used to abstract a single concrete implementation only.
 
 ## Usage

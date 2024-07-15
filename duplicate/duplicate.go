@@ -20,11 +20,12 @@ func newAnalyzer() *analysis.Analyzer {
 
 	analyzer := &analysis.Analyzer{
 		Name:     "duplicate",
-		Doc:      "finds duplicate interfaces within the package",
+		Doc:      "finds interfaces in the same package that have identical method sets",
 		URL:      "https://pkg.go.dev/github.com/uudashr/iface/duplicate",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Run:      r.run,
 	}
+
 	analyzer.Flags.BoolVar(&r.debug, "debug", false, "enable debug mode")
 
 	return analyzer
