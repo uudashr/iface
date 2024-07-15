@@ -41,18 +41,21 @@ The following quotes inspired the creation of these analyzers:
 
 > "Go interfaces generally belong in the package that uses values of the interface type, not the package that implements those values. The implementing package should return concrete (usually pointer or struct) types: that way, new methods can be added to implementations without requiring extensive refactoring."
 >
-> -- [Go Code Review Comments, go.dev](https://go.dev/wiki/CodeReviewComments#interfaces) --
+> [Go Code Review Comments, go.dev](https://go.dev/wiki/CodeReviewComments#interfaces)
 
 
 > "Don’t export any interfaces until you have to."
 >
-> -- [Interface pollution in Go, rakyll.org](https://rakyll.org/interface-pollution/) --
+> [Interface pollution in Go, rakyll.org](https://rakyll.org/interface-pollution/)
 
 
 > "The use of interfaces when they are not necessary is called interface pollution."
 > 
-> -- [Avoid Interface Pollution, ardanlabs.com](https://www.ardanlabs.com/blog/2016/10/avoid-interface-pollution.html) --
+> [Avoid Interface Pollution, ardanlabs.com](https://www.ardanlabs.com/blog/2016/10/avoid-interface-pollution.html)
 
+> "Go interfaces generally belong in the package that consumes values of the interface type, not a package that implements the interface type."
+>
+> [Go Style Decisions, google.github.io](https://google.github.io/styleguide/go/decisions#interfaces)
 
 ## Related Articles
 - [Interface Pollution](https://rakyll.org/interface-pollution/)
