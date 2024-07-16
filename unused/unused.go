@@ -27,7 +27,7 @@ func newAnalyzer() *analysis.Analyzer {
 	}
 
 	analyzer.Flags.BoolVar(&r.debug, "debug", false, "enable debug mode")
-	analyzer.Flags.StringVar(&r.exclude, "exclude", "", "comma separated list of package to exclude from the check")
+	analyzer.Flags.StringVar(&r.exclude, "exclude", "", "comma-separated list of packages to exclude from the check")
 
 	return analyzer
 }
