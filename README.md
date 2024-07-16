@@ -4,10 +4,9 @@
 `iface` is a linter designed to identify the incorrect use of interfaces in Go code, helping developers avoid interface pollution. By detecting unnecessary or poorly implemented interfaces, `iface` ensures your Go code remains clean, efficient, and maintainable.
 
 It consists of several analyzers :
-1. `empty`: Finds empty interfaces.
-2. `unused`: Finds interfaces that are not used anywhere in the same package where the interface is defined.
-3. `duplicate`: Finds interfaces in the same package that have identical method sets.
-4. `opaque`: Find the interfaces that are used to abstract a single concrete implementation only.
+1. `unused`: Identifies interfaces that are not used anywhere in the same package where the interface is defined.
+2. `identical`: Identifies interfaces in the same package with identical methods or constraints.
+3. `opaque`: Identifies functions that return interfaces, but the actual returned value is always a single concrete implementation.
 
 ## Usage
 
@@ -18,7 +17,6 @@ go install github.com/uudashr/iface/cmd/ifacecheck@latest
 
 To install individual linter, use the following command:
 ```sh
-go install github.com/uudashr/iface/empty/cmd/emptyiface@latest
 go install github.com/uudashr/iface/unused/cmd/unusediface@latest
 go install github.com/uudashr/iface/duplicate/cmd/duplicateiface@latest
 go install github.com/uudashr/iface/opaque/cmd/opaqueiface@latest
@@ -35,7 +33,7 @@ ifacecheck help
 ```
 
 ## Background
-One of Go's powerful features is interfaces. However, sometimes people misuse the interfaces event hough the code works but the code polluted with interfaces.
+One of Go's powerful features is interfaces. However, sometimes people misuse the interfaces event though the code works but the code polluted with interfaces.
 
 The following quotes inspired the creation of these analyzers:
 
