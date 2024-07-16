@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"slices"
+	"strings"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
@@ -25,15 +27,22 @@ func newAnalyzer() *analysis.Analyzer {
 	}
 
 	analyzer.Flags.BoolVar(&r.debug, "debug", false, "enable debug mode")
+	analyzer.Flags.StringVar(&r.exclude, "exclude", "", "comma separated list of package to exclude from the check")
 
 	return analyzer
 }
 
 type runner struct {
-	debug bool
+	debug   bool
+	exclude string
 }
 
 func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
+	excludes := strings.Split(r.exclude, ",")
+	if slices.Contains(excludes, pass.Pkg.Path()) {
+		return nil, nil
+	}
+
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	// Collect all interface type declarations
@@ -89,6 +98,10 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 
 		delete(ifaceDecls, ident.Name)
 	})
+
+	if r.debug {
+		fmt.Printf("Package %s %s\n", pass.Pkg.Path(), pass.Pkg.Name())
+	}
 
 	for name, pos := range ifaceDecls {
 		pass.Reportf(pos, "interface %s is declared but not used within the package", name)

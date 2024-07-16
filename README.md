@@ -4,7 +4,7 @@
 
 `iface` is a linter designed to identify the incorrect use of interfaces in Go code, helping developers avoid interface pollution. By detecting unnecessary or poorly implemented interfaces, `iface` ensures your Go code remains clean, efficient, and maintainable.
 
-It consists of several analyzers :
+It consists of several analyzers:
 1. `unused`: Identifies interfaces that are not used anywhere in the same package where the interface is defined.
 2. `identical`: Identifies interfaces in the same package with identical methods or constraints.
 3. `opaque`: Identifies functions that return interfaces, but the actual returned value is always a single concrete implementation.
@@ -31,7 +31,21 @@ ifacecheck ./...
 or show the help
 ```sh
 ifacecheck help
+
+# or
+ifacecheck help <analyzer-name>
 ```
+
+## Exclusion
+
+We encourage to use default behavior and put effot to follow the rules. But, for some reason rules are not applicable. Due to this we can exclude specific package to be scanned by the analyzers. Use `-unused.exclude` flag and currently only `unused` has this feature. See help for more information:
+
+Example usage: 
+```sh
+ifacecheck -unused.exclude=github.com/example/log ./...
+```
+
+Note: use exclusion with careful consideration.
 
 ## Background
 
@@ -56,8 +70,4 @@ The following quotes inspired the creation of these analyzers:
 > "Go interfaces generally belong in the package that consumes values of the interface type, not a package that implements the interface type."
 >
 > [Go Style Decisions, google.github.io](https://google.github.io/styleguide/go/decisions#interfaces)
-
-## Related Articles
-- [Interface Pollution](https://rakyll.org/interface-pollution/)
-- [Avoid Interface Pollution](https://www.ardanlabs.com/blog/2016/10/avoid-interface-pollution.html)
 
