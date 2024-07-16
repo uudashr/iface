@@ -19,7 +19,7 @@ func newAnalyzer() *analysis.Analyzer {
 	r := runner{}
 
 	analyzer := &analysis.Analyzer{
-		Name:     "duplicate",
+		Name:     "identical",
 		Doc:      "Identifies interfaces in the same package that have identical method sets",
 		URL:      "https://pkg.go.dev/github.com/uudashr/iface/duplicate",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
