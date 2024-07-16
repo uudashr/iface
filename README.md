@@ -1,6 +1,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/uudashr/iface.svg)](https://pkg.go.dev/github.com/uudashr/iface)
 
 # iface
+
 `iface` is a linter designed to identify the incorrect use of interfaces in Go code, helping developers avoid interface pollution. By detecting unnecessary or poorly implemented interfaces, `iface` ensures your Go code remains clean, efficient, and maintainable.
 
 It consists of several analyzers :
@@ -33,6 +34,7 @@ ifacecheck help
 ```
 
 ## Background
+
 One of Go's powerful features is interfaces. However, sometimes people misuse the interfaces event though the code works but the code polluted with interfaces.
 
 The following quotes inspired the creation of these analyzers:

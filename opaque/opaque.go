@@ -126,7 +126,7 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 						typ := pass.TypesInfo.TypeOf(res)
 						switch typ := typ.(type) {
 						case *types.Tuple:
-							for i := range typ.Len() {
+							for i := 0; i < typ.Len(); i++ {
 								v := typ.At(i)
 								vTyp := v.Type()
 								retStmtTypes[i][vTyp] = struct{}{}

@@ -1,0 +1,10 @@
+*.test
+.DS_Store
+/*.pdf
+/*.pprof
+/*.txt
+/.idea/
+/.vscode/
+/dist/
+coverage.out
+coverage.xml
