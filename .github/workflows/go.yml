@@ -5,9 +5,13 @@ name: Go
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
+      - main
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - master
+      - main
 
 jobs:
 
@@ -15,11 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.22.x']
+        go-version: [oldstable, stable]
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Go ${{ matrix.go-version }}
-      uses: actions/setup-go@v5
+    - uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
     - name: Test
@@ -29,11 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Go
-      uses: actions/setup-go@v5
+    - uses: actions/setup-go@v5
       with:
-        go-version: 1.22.x
+        go-version: oldstable
     - uses: golangci/golangci-lint-action@v6
       with:
         version: latest
-        install-mode: goinstall
