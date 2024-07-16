@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/uudashr/iface/duplicate"
+	"github.com/uudashr/iface/identical"
 	"golang.org/x/tools/go/analysis/singlechecker"
 )
 
 func main() {
-	singlechecker.Main(duplicate.Analyzer)
+	singlechecker.Main(identical.Analyzer)
 }

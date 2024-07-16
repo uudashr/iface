@@ -1,4 +1,4 @@
-package duplicate
+package identical
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ func newAnalyzer() *analysis.Analyzer {
 
 	analyzer := &analysis.Analyzer{
 		Name:     "duplicate",
-		Doc:      "finds interfaces in the same package that have identical method sets",
+		Doc:      "Identifies interfaces in the same package that have identical method sets",
 		URL:      "https://pkg.go.dev/github.com/uudashr/iface/duplicate",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Run:      r.run,
@@ -99,10 +99,10 @@ Loop:
 			}
 
 			if r.debug {
-				fmt.Println("Duplicate interface:", name, "and", otherName)
+				fmt.Println("Identical interface:", name, "and", otherName)
 			}
 
-			pass.Reportf(ifaceDecls[name], "interface %s contains duplicate methods or type constraints from another interface, causing redundancy", name)
+			pass.Reportf(ifaceDecls[name], "interface %s contains identical methods or type constraints from another interface, causing redundancy", name)
 
 			continue Loop
 		}
