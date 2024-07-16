@@ -18,7 +18,7 @@ func newAnalyzer() *analysis.Analyzer {
 
 	analyzer := &analysis.Analyzer{
 		Name:     "unused",
-		Doc:      "finds interfaces that are not used anywhere in the same package where the interface is defined",
+		Doc:      "Identifies interfaces that are not used anywhere in the same package where the interface is defined",
 		URL:      "https://pkg.go.dev/github.com/uudashr/iface/unused",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Run:      r.run,

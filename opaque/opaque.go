@@ -20,7 +20,7 @@ func newAnalyzer() *analysis.Analyzer {
 
 	analyzer := &analysis.Analyzer{
 		Name:     "opaque",
-		Doc:      "finds the interfaces that are used to abstract a single concrete implementation only",
+		Doc:      "Identifies functions that return interfaces, but the actual returned value is always a single concrete implementation.",
 		URL:      "https://pkg.go.dev/github.com/uudashr/iface/opaque",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Run:      r.run,
