@@ -7,6 +7,7 @@ import (
 	"go/types"
 	"reflect"
 
+	"github.com/uudashr/iface/internal/directive"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
@@ -43,48 +44,73 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 	ifaceTypes := make(map[string]*types.Interface)
 
 	nodeFilter := []ast.Node{
-		(*ast.TypeSpec)(nil),
+		(*ast.GenDecl)(nil),
 	}
 
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
-		ts, ok := n.(*ast.TypeSpec)
-		if !ok {
-			return
-		}
-
-		ifaceType, ok := ts.Type.(*ast.InterfaceType)
+		decl, ok := n.(*ast.GenDecl)
 		if !ok {
 			return
 		}
 
 		if r.debug {
-			fmt.Println("Interface declaration:", ts.Name.Name, ts.Pos(), len(ifaceType.Methods.List))
+			fmt.Printf("GenDecl: %v specs=%d\n", decl.Tok, len(decl.Specs))
+		}
 
-			for i, field := range ifaceType.Methods.List {
-				switch ft := field.Type.(type) {
-				case *ast.FuncType:
-					fmt.Printf(" [%d] Field: func %s %v %v\n", i, field.Names[0].Name, reflect.TypeOf(field.Type), field.Pos())
-				case *ast.Ident:
-					fmt.Printf(" [%d] Field: iface %s %v %v\n", i, ft.Name, reflect.TypeOf(field.Type), field.Pos())
-				default:
-					fmt.Printf(" [%d] Field: unknown %v\n", i, reflect.TypeOf(ft))
+		if decl.Tok != token.TYPE {
+			return
+		}
+
+		for i, spec := range decl.Specs {
+			if r.debug {
+				fmt.Printf(" spec[%d]: %v %v\n", i, spec, reflect.TypeOf(spec))
+			}
+
+			ts, ok := spec.(*ast.TypeSpec)
+			if !ok {
+				return
+			}
+
+			ifaceType, ok := ts.Type.(*ast.InterfaceType)
+			if !ok {
+				return
+			}
+
+			if r.debug {
+				fmt.Println("Interface declaration:", ts.Name.Name, ts.Pos(), len(ifaceType.Methods.List))
+
+				for i, field := range ifaceType.Methods.List {
+					switch ft := field.Type.(type) {
+					case *ast.FuncType:
+						fmt.Printf(" [%d] Field: func %s %v %v\n", i, field.Names[0].Name, reflect.TypeOf(field.Type), field.Pos())
+					case *ast.Ident:
+						fmt.Printf(" [%d] Field: iface %s %v %v\n", i, ft.Name, reflect.TypeOf(field.Type), field.Pos())
+					default:
+						fmt.Printf(" [%d] Field: unknown %v\n", i, reflect.TypeOf(ft))
+					}
 				}
 			}
+
+			dir := directive.ParseIgnore(decl.Doc)
+			if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
+				// skip due to ignore directive
+				continue
+			}
+
+			ifaceDecls[ts.Name.Name] = ts.Pos()
+
+			obj := pass.TypesInfo.Defs[ts.Name]
+			if obj == nil {
+				return
+			}
+
+			iface, ok := obj.Type().Underlying().(*types.Interface)
+			if !ok {
+				return
+			}
+
+			ifaceTypes[ts.Name.Name] = iface
 		}
-
-		ifaceDecls[ts.Name.Name] = ts.Pos()
-
-		obj := pass.TypesInfo.Defs[ts.Name]
-		if obj == nil {
-			return
-		}
-
-		iface, ok := obj.Type().Underlying().(*types.Interface)
-		if !ok {
-			return
-		}
-
-		ifaceTypes[ts.Name.Name] = iface
 	})
 
 Loop:

@@ -38,12 +38,24 @@ ifacecheck help <analyzer-name>
 
 ## Exclusion
 
+### Package exclusion
+
 We encourage to use default behavior and put effot to follow the rules. But, for some reason rules are not applicable. Due to this we can exclude specific package to be scanned by the analyzers. Use `-unused.exclude` flag and currently only `unused` has this feature. See help for more information:
 
 Example usage: 
 ```sh
 ifacecheck -unused.exclude=github.com/example/log ./...
 ```
+
+### Ignore Directive
+
+Exclusion can be done by using directive in the code by placing the `//iface:ignore` to ignore the code from being scanned by the analyzer. Example:
+
+1. `iface:ignore` to ignore the from all analyzers.
+2. `iface:ignore=[analyzer names]` which names is comma separators to exclude from defined names only. Ex: 
+    - `iface:ignore=unused` ignore from `unused` analyzer.
+    - `iface:ignore=unused,identical` ignore from `unused` and `identical` analyzers.
+
 
 Note: use exclusion with careful consideration.
 

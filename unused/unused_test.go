@@ -17,4 +17,5 @@ func TestAnalyzer(t *testing.T) {
 	analysistest.Run(t, testdata, unused.Analyzer, "a")
 	analysistest.Run(t, testdata, unused.Analyzer, "b")
 	analysistest.Run(t, testdata, unused.Analyzer, "c")
+	analysistest.Run(t, testdata, unused.Analyzer, "d")
 }

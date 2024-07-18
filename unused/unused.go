@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"reflect"
 	"slices"
 	"strings"
 
+	"github.com/uudashr/iface/internal/directive"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
@@ -49,25 +51,50 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 	ifaceDecls := make(map[string]token.Pos)
 
 	nodeFilter := []ast.Node{
-		(*ast.TypeSpec)(nil),
+		(*ast.GenDecl)(nil),
 	}
 
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
-		ts, ok := n.(*ast.TypeSpec)
-		if !ok {
-			return
-		}
-
-		_, ok = ts.Type.(*ast.InterfaceType)
+		decl, ok := n.(*ast.GenDecl)
 		if !ok {
 			return
 		}
 
 		if r.debug {
-			fmt.Println("Interface type declaration:", ts.Name.Name, ts.Pos())
+			fmt.Printf("GenDecl: %v specs=%d\n", decl.Tok, len(decl.Specs))
 		}
 
-		ifaceDecls[ts.Name.Name] = ts.Pos()
+		if decl.Tok != token.TYPE {
+			return
+		}
+
+		for i, spec := range decl.Specs {
+			if r.debug {
+				fmt.Printf(" spec[%d]: %v %v\n", i, spec, reflect.TypeOf(spec))
+			}
+
+			ts, ok := spec.(*ast.TypeSpec)
+			if !ok {
+				continue
+			}
+
+			_, ok = ts.Type.(*ast.InterfaceType)
+			if !ok {
+				return
+			}
+
+			if r.debug {
+				fmt.Println(" Interface type declaration:", ts.Name.Name, ts.Pos())
+			}
+
+			dir := directive.ParseIgnore(decl.Doc)
+			if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
+				// skip due to ignore directive
+				continue
+			}
+
+			ifaceDecls[ts.Name.Name] = ts.Pos()
+		}
 	})
 
 	if r.debug {

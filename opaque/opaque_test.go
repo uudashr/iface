@@ -16,5 +16,6 @@ func TestAnalyzer(t *testing.T) {
 	analysistest.Run(t, testdata, opaque.Analyzer, "e")
 	analysistest.Run(t, testdata, opaque.Analyzer, "f")
 	analysistest.Run(t, testdata, opaque.Analyzer, "g")
+	analysistest.Run(t, testdata, opaque.Analyzer, "h")
 	analysistest.Run(t, testdata, opaque.Analyzer, "x")
 }

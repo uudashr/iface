@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/uudashr/iface/internal/directive"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
@@ -60,6 +61,12 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 		if r.debug {
 			fmt.Printf("Function declaration %s\n", funcDecl.Name.Name)
 			fmt.Printf(" Results len=%d\n", len(funcDecl.Type.Results.List))
+		}
+
+		dir := directive.ParseIgnore(funcDecl.Doc)
+		if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
+			// skip ignored function
+			return
 		}
 
 		// Pre-check, only function that has interface return type will be processed
