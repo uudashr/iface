@@ -30,18 +30,19 @@ func ParseIgnore(doc *ast.CommentGroup) *Ignore {
 	}
 
 	for _, comment := range doc.List {
-		if !strings.HasPrefix(comment.Text, "//iface:ignore") {
-			continue
+		text := strings.TrimSpace(comment.Text)
+		if text == "//iface:ignore" {
+			return &Ignore{}
 		}
 
 		// parse the Names if exists
-		if strings.Contains(comment.Text, "=") {
-			parts := strings.Split(comment.Text, "=")
-			if len(parts) != 2 {
-				continue
+		if val, found := strings.CutPrefix(text, "//iface:ignore="); found {
+			val = strings.TrimSpace(val)
+			if val == "" {
+				return &Ignore{}
 			}
 
-			names := strings.Split(parts[1], ",")
+			names := strings.Split(val, ",")
 			if len(names) == 0 {
 				continue
 			}
@@ -53,9 +54,9 @@ func ParseIgnore(doc *ast.CommentGroup) *Ignore {
 			if len(names) > 0 {
 				return &Ignore{Names: names}
 			}
-		}
 
-		return &Ignore{}
+			return &Ignore{}
+		}
 	}
 
 	return nil

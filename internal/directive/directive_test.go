@@ -32,6 +32,7 @@ func TestParseIgnore(t *testing.T) {
 					},
 				},
 			},
+			dir: nil,
 		},
 		"directive with one name": {
 			doc: &ast.CommentGroup{
@@ -56,6 +57,26 @@ func TestParseIgnore(t *testing.T) {
 			dir: &directive.Ignore{
 				Names: []string{"unused", "identical"},
 			},
+		},
+		"directive with weird assignment": {
+			doc: &ast.CommentGroup{
+				List: []*ast.Comment{
+					{
+						Text: "//iface:ignore-asd=unused",
+					},
+				},
+			},
+			dir: nil,
+		},
+		"directive empty val": {
+			doc: &ast.CommentGroup{
+				List: []*ast.Comment{
+					{
+						Text: "//iface:ignore=",
+					},
+				},
+			},
+			dir: &directive.Ignore{},
 		},
 	}
 
