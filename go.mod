@@ -1,6 +1,6 @@
 module github.com/uudashr/iface
 
-go 1.21.0
+go 1.22.1
 
 require golang.org/x/tools v0.22.0
 
