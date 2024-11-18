@@ -26,7 +26,6 @@ linters:
     - errname
     - errorlint
     - exhaustive
-    - exportloopref
     - fatcontext
     - gci
     - ginkgolinter
