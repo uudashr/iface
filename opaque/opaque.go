@@ -53,6 +53,11 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 			return
 		}
 
+		if funcDecl.Body == nil {
+			// skip functions without body
+			return
+		}
+
 		if funcDecl.Type.Results == nil {
 			// skip functions without return values
 			return
