@@ -1,0 +1,41 @@
+package app
+
+type Server interface {
+	Serve() error
+}
+
+type server struct {
+	addr string
+}
+
+func (s server) Serve() error {
+	return nil
+}
+
+func NewServer(addr string) *server { // want "NewServer function return Server interface at the 1st result, abstract a single concrete implementation of \\*server"
+	return newServer(addr)
+}
+
+func NewServer2(addr string) server { // want "NewServer2 function return Server interface at the 1st result, abstract a single concrete implementation of server"
+	return server{addr: addr}
+}
+
+func NewServer3(addr string) *server { // want "NewServer3 function return Server interface at the 1st result, abstract a single concrete implementation of \\*server"
+	return &server{addr: addr}
+}
+
+func newServer(addr string) *server {
+	return &server{addr: addr}
+}
+
+type secureServer struct {
+	addr string
+}
+
+func (ss *secureServer) Serve() error {
+	return nil
+}
+
+func NewSecureServer(addr string) *secureServer { // want "NewSecureServer function return Server interface at the 1st result, abstract a single concrete implementation of \\*secureServer"
+	return &secureServer{addr: addr}
+}
