@@ -14,8 +14,9 @@ func TestAnalyzer(t *testing.T) {
 	}
 
 	testdata := analysistest.TestData()
-	analysistest.Run(t, testdata, unused.Analyzer, "a")
-	analysistest.Run(t, testdata, unused.Analyzer, "b")
-	analysistest.Run(t, testdata, unused.Analyzer, "c")
-	analysistest.Run(t, testdata, unused.Analyzer, "d")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "a")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "agroup")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "b")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "c")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "d")
 }
