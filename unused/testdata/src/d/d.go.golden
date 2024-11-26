@@ -1,0 +1,20 @@
+package actor
+
+// Doer performs some work.
+//
+//iface:ignore
+type Doer interface {
+	Do() error
+}
+
+//iface:ignore=unused
+type Runner interface {
+	Run() error
+}
+
+//iface:ignore=other
+
+//iface:ignore=other,unused
+type Server interface {
+	Serve() error
+}
