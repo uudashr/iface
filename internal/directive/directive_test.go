@@ -149,5 +149,4 @@ func TestIgnore_ShouldIgnore(t *testing.T) {
 			}
 		})
 	}
-
 }
