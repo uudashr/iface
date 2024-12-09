@@ -1,6 +1,3 @@
-run:
-  tests: false
-  
 linters:
   enable:
     - errcheck
@@ -63,7 +60,6 @@ linters:
     - noctx
     - nolintlint
     - nosprintfhostport
-    - paralleltest
     - perfsprint
     - prealloc
     - predeclared
@@ -82,7 +78,6 @@ linters:
     - testifylint
     - testpackage
     - thelper
-    - tparallel
     - unconvert
     - unparam
     - usestdlibvars
