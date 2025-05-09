@@ -19,7 +19,7 @@ go install github.com/uudashr/iface/cmd/ifacecheck@latest
 To install individual linter, use the following command:
 ```sh
 go install github.com/uudashr/iface/unused/cmd/unusediface@latest
-go install github.com/uudashr/iface/duplicate/cmd/duplicateiface@latest
+go install github.com/uudashr/iface/identical/cmd/identicaliface@latest
 go install github.com/uudashr/iface/opaque/cmd/opaqueiface@latest
 ```
 
