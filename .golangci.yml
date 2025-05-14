@@ -1,11 +1,6 @@
+version: "2"
 linters:
   enable:
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
     - asasalint
     - asciicheck
     - bidichk
@@ -24,7 +19,6 @@ linters:
     - errorlint
     - exhaustive
     - fatcontext
-    - gci
     - ginkgolinter
     - gocheckcompilerdirectives
     - gochecknoinits
@@ -33,10 +27,7 @@ linters:
     - gocritic
     - godot
     - godox
-    - gofmt
-    - gofumpt
     - goheader
-    - goimports
     - gomoddirectives
     - gomodguard
     - goprintffuncname
@@ -73,7 +64,6 @@ linters:
     - spancheck
     - tagalign
     - tagliatelle
-    - tenv
     - testableexamples
     - testifylint
     - testpackage
@@ -85,18 +75,40 @@ linters:
     - whitespace
     - wsl
     - zerologlint
-
-linters-settings:
-  varnamelen:
-    ignore-type-assert-ok: true
-    ignore-decls:
-      - i int
-      - tx *sql.Tx
-      - ts *ast.TypeSpec
-      - fn *ast.FuncDecl
-      - fun *ast.FuncDecl
-      - fnDecl *ast.FuncDecl
-      - funDecl *ast.FuncDecl
-  mnd:
-    ignored-numbers:
-      - "2"
+  settings:
+    mnd:
+      ignored-numbers:
+        - "2"
+    varnamelen:
+      ignore-type-assert-ok: true
+      ignore-decls:
+        - i int
+        - tx *sql.Tx
+        - ts *ast.TypeSpec
+        - fn *ast.FuncDecl
+        - fun *ast.FuncDecl
+        - fnDecl *ast.FuncDecl
+        - funDecl *ast.FuncDecl
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

@@ -27,7 +27,7 @@ func newAnalyzer() *analysis.Analyzer {
 		Run:      r.run,
 	}
 
-	analyzer.Flags.BoolVar(&r.debug, "debug", false, "enable debug mode")
+	analyzer.Flags.BoolVar(&r.debug, "nerd", false, "enable nerd mode")
 
 	return analyzer
 }
