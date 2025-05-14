@@ -41,6 +41,7 @@ type runner struct {
 
 func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 	fmt.Println("Running unused interface analyzer")
+
 	excludes := strings.Split(r.exclude, ",")
 	if slices.Contains(excludes, pass.Pkg.Path()) {
 		return nil, nil
