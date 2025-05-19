@@ -13,7 +13,7 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-// Analyzer is the duplicate interface analyzer.
+// Analyzer is the identical interface analyzer.
 var Analyzer = newAnalyzer()
 
 func newAnalyzer() *analysis.Analyzer {
