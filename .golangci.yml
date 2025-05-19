@@ -10,7 +10,6 @@ linters:
     - copyloopvar
     - decorder
     - dogsled
-    - dupl
     - dupword
     - durationcheck
     - err113
