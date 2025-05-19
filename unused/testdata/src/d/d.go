@@ -7,7 +7,7 @@ type Doer interface {
 	Do() error
 }
 
-type Greeter interface { // want "interface Greeter is declared but not used within the package"
+type Greeter interface { // want "interface 'Greeter' is declared but not used within the package"
 	Greet() error
 }
 
@@ -17,7 +17,7 @@ type Runner interface {
 }
 
 //iface:ignore=other
-type Executor interface { // want "interface Executor is declared but not used within the package"
+type Executor interface { // want "interface 'Executor' is declared but not used within the package"
 	Execute() error
 }
 

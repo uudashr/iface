@@ -10,8 +10,7 @@ type Span interface {
 	Finish()
 }
 
-type span struct {
-}
+type span struct {}
 
 func (s *span) Finish() {
 }
@@ -24,7 +23,7 @@ func StartSpanFromContextWithTracer(ctx context.Context, tracer Tracer) (Span, e
 	return nil, nil
 }
 
-func StartSpanFromContext2(ctx context.Context) (*span, error) { // want "StartSpanFromContext2 function return Span interface at the 1st result, abstract a single concrete implementation of \\*span"
+func StartSpanFromContext2(ctx context.Context) (*span, error) { // want "'StartSpanFromContext2' function return 'Span' interface at the 1st result, abstract a single concrete implementation of '\\*span'"
 	return startSpanFromContextWithTracer(ctx, GlobalTracer)
 }
 

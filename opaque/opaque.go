@@ -277,7 +277,7 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 				stmtTypName = removePkgPrefix(stmtTypName)
 			}
 
-			msg := fmt.Sprintf("%s function return %s interface at the %s result, abstract a single concrete implementation of %s",
+			msg := fmt.Sprintf("'%s' function return '%s' interface at the %s result, abstract a single concrete implementation of '%s'",
 				funcDecl.Name.Name,
 				retTypeName,
 				positionStr(currentIdx),

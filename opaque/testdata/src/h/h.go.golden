@@ -17,7 +17,7 @@ func NewServer(addr string) Server {
 	return newServer(addr)
 }
 
-func NewServer2(addr string) server { // want "NewServer2 function return Server interface at the 1st result, abstract a single concrete implementation of server"
+func NewServer2(addr string) server { // want "'NewServer2' function return 'Server' interface at the 1st result, abstract a single concrete implementation of 'server'"
 	return server{addr: addr}
 }
 
