@@ -1,11 +1,11 @@
 package stream
 
-type StreamNameLister interface { // want "interface StreamNameLister contains identical methods or type constraints from another interface, causing redundancy"
+type StreamNameLister interface { // want "interface 'StreamNameLister' contains identical methods or type constraints with another interface, causing redundancy"
 	Name() <-chan string
 	Err() error
 }
 
-type ConsumerNameLister interface { // want "interface ConsumerNameLister contains identical methods or type constraints from another interface, causing redundancy"
+type ConsumerNameLister interface { // want "interface 'ConsumerNameLister' contains identical methods or type constraints with another interface, causing redundancy"
 	Name() <-chan string
 	Err() error
 }

@@ -7,7 +7,7 @@ type User struct {
 	Name string
 }
 
-type UserRepository interface { // want "interface UserRepository is declared but not used within the package"
+type UserRepository interface { // want "interface 'UserRepository' is declared but not used within the package"
 	UserOf(id string) (*User, error)
 }
 

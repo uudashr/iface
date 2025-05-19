@@ -11,29 +11,23 @@ type Doer interface {
 	DoItAgain()
 }
 
-type DoerImpl struct {
-}
+type DoerImpl struct{}
 
 func (di DoerImpl) Do() {
-
 }
 
 func (di *DoerImpl) DoItAgain() {
-
 }
 
-type DoerV2Impl struct {
-}
+type DoerV2Impl struct{}
 
 func (d2i DoerV2Impl) Do() {
-
 }
 
 func (d2i *DoerV2Impl) DoItAgain() {
-
 }
 
-func NewDoer() Doer { // want "NewDoer function return Doer interface at the 1st result, abstract a single concrete implementation of \\*DoerImpl"
+func NewDoer() Doer { // want "'NewDoer' function return 'Doer' interface at the 1st result, abstract a single concrete implementation of '\\*DoerImpl'"
 	return &DoerImpl{}
 }
 
@@ -58,7 +52,7 @@ func NewDoerWithOK() (Doer, bool) {
 		return true
 	})
 
-	var x = func() bool {
+	x := func() bool {
 		return true
 	}
 

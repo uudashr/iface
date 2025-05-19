@@ -8,7 +8,7 @@ type (
 		Name string
 	}
 
-	UserRepository interface { // want "interface UserRepository is declared but not used within the package"
+	UserRepository interface { // want "interface 'UserRepository' is declared but not used within the package"
 		UserOf(id string) (*User, error)
 	}
 

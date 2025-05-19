@@ -147,7 +147,7 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 			node = ts
 		}
 
-		msg := fmt.Sprintf("interface %s is declared but not used within the package", name)
+		msg := fmt.Sprintf("interface '%s' is declared but not used within the package", name)
 		pass.Report(analysis.Diagnostic{
 			Pos:     ts.Pos(),
 			Message: msg,
@@ -167,4 +167,10 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 	}
 
 	return nil, nil
+}
+
+func (r *runner) debugf(format string, a ...any) {
+	if r.debug {
+		fmt.Printf(format, a...)
+	}
 }

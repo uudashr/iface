@@ -128,7 +128,7 @@ Loop:
 				fmt.Println("Identical interface:", name, "and", otherName)
 			}
 
-			pass.Reportf(ifaceDecls[name], "interface %s contains identical methods or type constraints from another interface, causing redundancy", name)
+			pass.Reportf(ifaceDecls[name], "interface '%s' contains identical methods or type constraints with another interface, causing redundancy", name)
 
 			continue Loop
 		}
