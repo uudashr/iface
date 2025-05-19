@@ -168,9 +168,3 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 
 	return nil, nil
 }
-
-func (r *runner) debugf(format string, a ...any) {
-	if r.debug {
-		fmt.Printf(format, a...)
-	}
-}

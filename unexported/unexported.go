@@ -59,9 +59,11 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 		if recv := funcDecl.Recv; recv != nil {
 			recvType := recv.List[0].Type
-			infoType := pass.TypesInfo.TypeOf(recvType)
 
-			r.debugln("  recvType:", recvType, "infoType:", infoType, "reflectType:", reflect.TypeOf(recvType))
+			if r.debug {
+				infoType := pass.TypesInfo.TypeOf(recvType)
+				fmt.Println("  recvType:", recvType, "infoType:", infoType, "reflectType:", reflect.TypeOf(recvType))
+			}
 
 			switch typ := recvType.(type) {
 			case *ast.Ident:
