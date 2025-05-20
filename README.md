@@ -8,7 +8,7 @@ It consists of several analyzers:
 1. `unused`: Identifies interfaces that are not used anywhere in the same package where the interface is defined.
 2. `identical`: Identifies interfaces in the same package with identical methods or constraints.
 3. `opaque`: Identifies functions that return interfaces, but the actual returned value is always a single concrete implementation.
-4. `unexported`: Identifies interfaces that are not exported but are used in exported functions or methods.
+4. `unexported`: Identifies interfaces that are not exported but are used in exported functions or methods as parameters or return values.
 
 ## Usage
 
