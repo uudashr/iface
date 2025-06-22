@@ -13,7 +13,7 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-// Analyzer is the duplicate interface analyzer.
+// Analyzer is the analysis pass for detecting identical interfaces.
 var Analyzer = newAnalyzer()
 
 func newAnalyzer() *analysis.Analyzer {
@@ -21,8 +21,8 @@ func newAnalyzer() *analysis.Analyzer {
 
 	analyzer := &analysis.Analyzer{
 		Name:     "identical",
-		Doc:      "Identifies interfaces in the same package that have identical method sets",
-		URL:      "https://pkg.go.dev/github.com/uudashr/iface/duplicate",
+		Doc:      "Detects interfaces within the same package that have identical methods or type constraints.",
+		URL:      "https://pkg.go.dev/github.com/uudashr/iface/identical",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Run:      r.run,
 	}

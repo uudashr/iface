@@ -13,7 +13,7 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-// Analyzer is the opaque interface analyzer.
+// Analyzer is the analysis pass for detecting opaque interface returns.
 var Analyzer = newAnalyzer()
 
 func newAnalyzer() *analysis.Analyzer {
@@ -21,7 +21,7 @@ func newAnalyzer() *analysis.Analyzer {
 
 	analyzer := &analysis.Analyzer{
 		Name:     "opaque",
-		Doc:      "Identifies functions that return interfaces, but the actual returned value is always a single concrete implementation.",
+		Doc:      "Detects functions that return an interface type, but only ever return a single concrete implementation.",
 		URL:      "https://pkg.go.dev/github.com/uudashr/iface/opaque",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Run:      r.run,

@@ -5,10 +5,10 @@
 `iface` is a linter designed to identify the incorrect use of interfaces in Go code, helping developers avoid interface pollution. By detecting unnecessary or poorly implemented interfaces, `iface` ensures your Go code remains clean, efficient, and maintainable.
 
 It consists of several analyzers:
-1. `unused`: Identifies interfaces that are not used anywhere in the same package where the interface is defined.
-2. `identical`: Identifies interfaces in the same package with identical methods or constraints.
-3. `opaque`: Identifies functions that return interfaces, but the actual returned value is always a single concrete implementation.
-4. `unexported`: Identifies interfaces that are not exported but are used in exported functions or methods as parameters or return values.
+1. `unused`: Detects interfaces which are not used anywhere in the same package where they are defined.
+2. `identical`: Detects interfaces within the same package that have identical methods or type constraints.
+3. `opaque`: Detects functions that return an interface type, but only ever return a single concrete implementation.
+4. `unexported`: Detects interfaces which are not exported but are used as parameters or return values in exported functions or methods.
 
 ## Usage
 
