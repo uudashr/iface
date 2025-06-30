@@ -142,8 +142,8 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
-func (r *runner) debugln(msg string, args ...interface{}) {
+func (r *runner) debugln(a ...any) {
 	if r.debug {
-		fmt.Printf(msg+"\n", args...)
+		fmt.Println(a...)
 	}
 }

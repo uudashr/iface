@@ -39,7 +39,7 @@ type runner struct {
 	exclude string
 }
 
-func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
+func (r *runner) run(pass *analysis.Pass) (any, error) {
 	excludes := strings.Split(r.exclude, ",")
 	if slices.Contains(excludes, pass.Pkg.Path()) {
 		return nil, nil

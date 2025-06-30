@@ -36,7 +36,7 @@ type runner struct {
 	debug bool
 }
 
-func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
+func (r *runner) run(pass *analysis.Pass) (any, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	// Find function declarations that return an interface
