@@ -6,6 +6,8 @@ import (
 	"go/token"
 	"go/types"
 	"reflect"
+	"slices"
+	"strings"
 
 	"github.com/uudashr/iface/internal/directive"
 	"golang.org/x/tools/go/analysis"
@@ -113,7 +115,8 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 		}
 	})
 
-Loop:
+	identicals := make(map[string][]string)
+
 	for name, typ := range ifaceTypes {
 		for otherName, otherTyp := range ifaceTypes {
 			if name == otherName {
@@ -124,15 +127,23 @@ Loop:
 				continue
 			}
 
-			if r.debug {
-				fmt.Println("Identical interface:", name, "and", otherName)
-			}
+			r.debugln("Identical interface:", name, "and", otherName)
 
-			pass.Reportf(ifaceDecls[name], "interface '%s' contains identical methods or type constraints with another interface, causing redundancy", name)
-
-			continue Loop
+			identicals[name] = append(identicals[name], otherName)
 		}
 	}
 
+	for name, others := range identicals {
+		slices.Sort(others)
+		otherNames := strings.Join(others, ", ")
+		pass.Reportf(ifaceDecls[name], "interface '%s' contains identical methods or type constraints with another interface, causing redundancy (see: %s)", name, otherNames)
+	}
+
 	return nil, nil
+}
+
+func (r *runner) debugln(msg string, args ...interface{}) {
+	if r.debug {
+		fmt.Printf(msg+"\n", args...)
+	}
 }
