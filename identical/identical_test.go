@@ -14,4 +14,5 @@ func TestAnalyzer(t *testing.T) {
 	analysistest.Run(t, testdata, identical.Analyzer, "c")
 	analysistest.Run(t, testdata, identical.Analyzer, "d")
 	analysistest.Run(t, testdata, identical.Analyzer, "e")
+	analysistest.Run(t, testdata, identical.Analyzer, "f")
 }
