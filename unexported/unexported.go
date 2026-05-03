@@ -21,7 +21,7 @@ func newAnalyzer() *analysis.Analyzer {
 	analyzer := &analysis.Analyzer{
 		Name:     "unexported",
 		Doc:      "Detects interfaces which are not exported but are used as parameters or return values in exported functions or methods.",
-		URL:      "https://pkg.go.dev/github.com/uudashr/iface/visibility",
+		URL:      "https://pkg.go.dev/github.com/uudashr/iface/unexported",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Run:      r.run,
 	}
