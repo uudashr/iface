@@ -108,12 +108,12 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 
 			obj := pass.TypesInfo.Defs[ts.Name]
 			if obj == nil {
-				return
+				continue
 			}
 
 			iface, ok := obj.Type().Underlying().(*types.Interface)
 			if !ok {
-				return
+				continue
 			}
 
 			ifaceTypes[ts.Name.Name] = iface
