@@ -63,6 +63,11 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 			return
 		}
 
+		blockDir := directive.ParseIgnore(decl.Doc)
+		if blockDir != nil && blockDir.ShouldIgnore(pass.Analyzer.Name) {
+			return
+		}
+
 		for i, spec := range decl.Specs {
 			if r.debug {
 				fmt.Printf(" spec[%d]: %v %v\n", i, spec, reflect.TypeOf(spec))
@@ -98,9 +103,12 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 				}
 			}
 
-			dir := directive.ParseIgnore(decl.Doc)
+			dir := directive.ParseIgnore(ts.Doc)
+			if dir == nil {
+				dir = blockDir
+			}
+
 			if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
-				// skip due to ignore directive
 				continue
 			}
 
