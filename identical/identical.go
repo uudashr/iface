@@ -70,12 +70,17 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 
 			ts, ok := spec.(*ast.TypeSpec)
 			if !ok {
-				return
+				// this code is unreachable since we already have guard the token type
+				continue
+			}
+
+			if r.debug {
+				fmt.Printf("  -> ts.Type %v\n", reflect.TypeOf(ts.Type))
 			}
 
 			ifaceType, ok := ts.Type.(*ast.InterfaceType)
 			if !ok {
-				return
+				continue
 			}
 
 			if r.debug {
