@@ -55,9 +55,7 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 			return
 		}
 
-		if r.debug {
-			fmt.Printf("GenDecl: %v specs=%d\n", decl.Tok, len(decl.Specs))
-		}
+		r.debugf("GenDecl: %v specs=%d\n", decl.Tok, len(decl.Specs))
 
 		if decl.Tok != token.TYPE {
 			return
@@ -69,9 +67,7 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 		}
 
 		for i, spec := range decl.Specs {
-			if r.debug {
-				fmt.Printf(" spec[%d]: %v %v\n", i, spec, reflect.TypeOf(spec))
-			}
+			r.debugf(" spec[%d]: %v %T\n", i, spec, spec)
 
 			ts, ok := spec.(*ast.TypeSpec)
 			if !ok {
@@ -79,9 +75,7 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 				continue
 			}
 
-			if r.debug {
-				fmt.Printf("  -> ts.Type %v\n", reflect.TypeOf(ts.Type))
-			}
+			r.debugf("  -> ts.Type %T\n", ts.Type)
 
 			ifaceType, ok := ts.Type.(*ast.InterfaceType)
 			if !ok {
@@ -158,5 +152,11 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 func (r *runner) debugln(a ...any) {
 	if r.debug {
 		fmt.Println(a...)
+	}
+}
+
+func (r *runner) debugf(format string, a ...any) {
+	if r.debug {
+		fmt.Printf(format, a...)
 	}
 }
