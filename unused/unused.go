@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
-	"reflect"
 	"slices"
 	"strings"
 
@@ -71,7 +70,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 		for i, spec := range decl.Specs {
 			if r.debug {
-				fmt.Printf(" spec[%d]: %v %v\n", i, spec, reflect.TypeOf(spec))
+				fmt.Printf(" spec[%d]: %v %T\n", i, spec, spec)
 			}
 
 			ts, ok := spec.(*ast.TypeSpec)
