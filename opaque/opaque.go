@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"reflect"
 	"strings"
 
 	"github.com/uudashr/iface/internal/directive"
@@ -91,7 +90,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			typ := pass.TypesInfo.TypeOf(resType)
 
 			if r.debug {
-				fmt.Printf("  [%d] len=%d %v %v %v | %v %v interface=%t\n", i, len(result.Names), result.Names, resType, reflect.TypeOf(resType), typ, reflect.TypeOf(typ), types.IsInterface(typ))
+				fmt.Printf("  [%d] len=%d %v %v %T | %v %T interface=%t\n", i, len(result.Names), result.Names, resType, resType, typ, typ, types.IsInterface(typ))
 			}
 
 			if types.IsInterface(typ) && !hasInterfaceReturnType {
@@ -126,13 +125,13 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 				for i, result := range n.Results {
 					if r.debug {
-						fmt.Printf("   [%d] %v %v\n", i, result, reflect.TypeOf(result))
+						fmt.Printf("   [%d] %v %T\n", i, result, result)
 					}
 
 					switch res := result.(type) {
 					case *ast.CallExpr:
 						if r.debug {
-							fmt.Printf("       CallExpr Fun: %v %v\n", res.Fun, reflect.TypeOf(res.Fun))
+							fmt.Printf("       CallExpr Fun: %v %T\n", res.Fun, res.Fun)
 						}
 
 						typ := pass.TypesInfo.TypeOf(res)
@@ -144,7 +143,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 								retStmtTypes[i][vTyp] = struct{}{}
 
 								if r.debug {
-									fmt.Printf("          Tuple [%d]: %v %v | %v %v interface=%t\n", i, v, reflect.TypeOf(v), vTyp, reflect.TypeOf(vTyp), types.IsInterface(vTyp))
+									fmt.Printf("          Tuple [%d]: %v %T | %v %T interface=%t\n", i, v, v, vTyp, vTyp, types.IsInterface(vTyp))
 								}
 							}
 						default:
@@ -153,14 +152,14 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 					case *ast.Ident:
 						if r.debug {
-							fmt.Printf("       Ident: %v %v\n", res, reflect.TypeOf(res))
+							fmt.Printf("       Ident: %v %T\n", res, res)
 						}
 
 						typ := pass.TypesInfo.TypeOf(res)
 						isNilStmt := isUntypedNil(typ)
 
 						if r.debug {
-							fmt.Printf("        Ident type: %v %v interface=%t, untypedNil=%t\n", typ, reflect.TypeOf(typ), types.IsInterface(typ), isNilStmt)
+							fmt.Printf("        Ident type: %v %T interface=%t, untypedNil=%t\n", typ, typ, types.IsInterface(typ), isNilStmt)
 						}
 
 						if !isNilStmt {
@@ -174,13 +173,13 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 						typ := pass.TypesInfo.TypeOf(res)
 
 						if r.debug {
-							fmt.Printf("        UnaryExpr type: %v %v interface=%t\n", typ, reflect.TypeOf(typ), types.IsInterface(typ))
+							fmt.Printf("        UnaryExpr type: %v %T interface=%t\n", typ, typ, types.IsInterface(typ))
 						}
 
 						retStmtTypes[i][typ] = struct{}{}
 					default:
 						if r.debug {
-							fmt.Printf("       Unknown: %v %v\n", res, reflect.TypeOf(res))
+							fmt.Printf("       Unknown: %v %T\n", res, res)
 						}
 
 						typ := pass.TypesInfo.TypeOf(res)
@@ -251,7 +250,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			}
 
 			if r.debug {
-				fmt.Printf("stmtType: %v %v | %v %v\n", stmtTyp, reflect.TypeOf(stmtTyp), stmtTyp.Underlying(), reflect.TypeOf(stmtTyp.Underlying()))
+				fmt.Printf("stmtType: %v %T | %v %T\n", stmtTyp, stmtTyp, stmtTyp.Underlying(), stmtTyp.Underlying())
 			}
 
 			switch stmtTyp := stmtTyp.(type) {

@@ -5,7 +5,6 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
-	"reflect"
 	"slices"
 	"strings"
 
@@ -88,11 +87,11 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 				for i, field := range ifaceType.Methods.List {
 					switch ft := field.Type.(type) {
 					case *ast.FuncType:
-						fmt.Printf(" [%d] Field: func %s %v %v\n", i, field.Names[0].Name, reflect.TypeOf(field.Type), field.Pos())
+						fmt.Printf(" [%d] Field: func %s %T %v\n", i, field.Names[0].Name, ft, field.Pos())
 					case *ast.Ident:
-						fmt.Printf(" [%d] Field: iface %s %v %v\n", i, ft.Name, reflect.TypeOf(field.Type), field.Pos())
+						fmt.Printf(" [%d] Field: iface %s %T %v\n", i, ft.Name, ft, field.Pos())
 					default:
-						fmt.Printf(" [%d] Field: unknown %v\n", i, reflect.TypeOf(ft))
+						fmt.Printf(" [%d] Field: unknown %T\n", i, ft)
 					}
 				}
 			}
