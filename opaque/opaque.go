@@ -124,15 +124,11 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 				}
 
 				for i, result := range n.Results {
-					if r.debug {
-						fmt.Printf("   [%d] %v %T\n", i, result, result)
-					}
+					r.debugf("   [%d] %v %T\n", i, result, result)
 
 					switch res := result.(type) {
 					case *ast.CallExpr:
-						if r.debug {
-							fmt.Printf("       CallExpr Fun: %v %T\n", res.Fun, res.Fun)
-						}
+						r.debugf("       CallExpr Fun: %v %T\n", res.Fun, res.Fun)
 
 						typ := pass.TypesInfo.TypeOf(res)
 						switch typ := typ.(type) {
@@ -151,9 +147,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 						}
 
 					case *ast.Ident:
-						if r.debug {
-							fmt.Printf("       Ident: %v %T\n", res, res)
-						}
+						r.debugf("       Ident: %v %T\n", res, res)
 
 						typ := pass.TypesInfo.TypeOf(res)
 						isNilStmt := isUntypedNil(typ)
@@ -166,9 +160,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 							retStmtTypes[i][typ] = struct{}{}
 						}
 					case *ast.UnaryExpr:
-						if r.debug {
-							fmt.Printf("       UnaryExpr X: %v \n", res.X)
-						}
+						r.debugf("       UnaryExpr X: %v \n", res.X)
 
 						typ := pass.TypesInfo.TypeOf(res)
 
@@ -178,9 +170,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 						retStmtTypes[i][typ] = struct{}{}
 					default:
-						if r.debug {
-							fmt.Printf("       Unknown: %v %T\n", res, res)
-						}
+						r.debugf("       Unknown: %v %T\n", res, res)
 
 						typ := pass.TypesInfo.TypeOf(res)
 						retStmtTypes[i][typ] = struct{}{}
@@ -349,4 +339,10 @@ func removePkgPrefix(typeStr string) string {
 	}
 
 	return typeStr
+}
+
+func (r *runner) debugf(format string, a ...any) {
+	if r.debug {
+		fmt.Printf(format, a...)
+	}
 }

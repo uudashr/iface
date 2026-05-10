@@ -69,9 +69,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 		}
 
 		for i, spec := range decl.Specs {
-			if r.debug {
-				fmt.Printf(" spec[%d]: %v %T\n", i, spec, spec)
-			}
+			r.debugf(" spec[%d]: %v %T\n", i, spec, spec)
 
 			ts, ok := spec.(*ast.TypeSpec)
 			if !ok {
@@ -83,9 +81,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 				continue
 			}
 
-			if r.debug {
-				fmt.Println(" Interface type declaration:", ts.Name.Name, ts.Pos())
-			}
+			r.debugln(" Interface type declaration:", ts.Name.Name, ts.Pos())
 
 			dir := directive.ParseIgnore(decl.Doc)
 			if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
@@ -166,4 +162,16 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 	}
 
 	return nil, nil
+}
+
+func (r *runner) debugln(a ...any) {
+	if r.debug {
+		fmt.Println(a...)
+	}
+}
+
+func (r *runner) debugf(format string, a ...any) {
+	if r.debug {
+		fmt.Printf(format, a...)
+	}
 }
