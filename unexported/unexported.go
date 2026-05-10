@@ -142,6 +142,7 @@ func typeName(expr ast.Expr) string {
 		if e.Len == nil {
 			return "[]" + typeName(e.Elt)
 		}
+
 		return "[" + typeName(e.Len) + "]" + typeName(e.Elt)
 	case *ast.BasicLit:
 		return e.Value
