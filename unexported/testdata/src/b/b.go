@@ -220,3 +220,22 @@ func (e *ExportedType) ReadSlicePtrExt(r []*io.Writer) {}
 
 // 56. Method with slice of pointer to exported interface — no diagnostic
 func (e *ExportedType) ReadSlicePtrExported(r []*ExportedWriter) {}
+
+// 57. Generic receiver with unexported interface parameter
+type GenericType[T any] struct{}
+
+func (g *GenericType[T]) Process(r unexportedReader) {} // want "unexported interface 'unexportedReader' used as parameter in exported method 'GenericType\\[T\\].Process'"
+
+// 58. Generic receiver with unexported interface return value
+func (g *GenericType[T]) NewReader() unexportedReader { return nil } // want "unexported interface 'unexportedReader' used as return value in exported method 'GenericType\\[T\\].NewReader'"
+
+// 59. Generic receiver with both unexported interface param and return
+func (g *GenericType[T]) WrapReader(r unexportedReader) unexportedReader { return r } // want "unexported interface 'unexportedReader' used as parameter in exported method 'GenericType\\[T\\].WrapReader'" "unexported interface 'unexportedReader' used as return value in exported method 'GenericType\\[T\\].WrapReader'"
+
+// 60. Pointer to generic receiver with unexported interface parameter
+func (g *GenericType[T]) ProcessPtr(r unexportedReader) {} // want "unexported interface 'unexportedReader' used as parameter in exported method 'GenericType\\[T\\].ProcessPtr'"
+
+// 61. Multi-param generic receiver with unexported interface parameter
+type MultiGenericType[T, U any] struct{}
+
+func (m *MultiGenericType[T, U]) Handle(r unexportedReader) {} // want "unexported interface 'unexportedReader' used as parameter in exported method 'MultiGenericType\\[T, U\\].Handle'"

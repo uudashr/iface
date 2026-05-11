@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
+	"strings"
 
 	"github.com/uudashr/iface/internal/directive"
 	"golang.org/x/tools/go/analysis"
@@ -64,23 +65,12 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 				fmt.Printf(" recvType: %v infoType: %v reflectType: %T\n", recvType, infoType, recvType)
 			}
 
-			switch typ := recvType.(type) {
-			case *ast.Ident:
-				r.debugln("  recvIdent:", typ.Name)
-
-				recvName = typ.Name
-			case *ast.StarExpr:
-				r.debugln("  recvStarExpr:", typ.X)
-
-				if ident, ok := typ.X.(*ast.Ident); ok {
-					r.debugln("   recvIdent:", ident.Name)
-					recvName = ident.Name
-				} else {
-					r.debugln("   unhandled")
-				}
-			default:
-				r.debugln("  unhandled")
+			inner := recvType
+			if star, ok := inner.(*ast.StarExpr); ok {
+				inner = star.X
 			}
+
+			recvName = typeName(inner)
 		}
 
 		if !funcDecl.Name.IsExported() {
@@ -123,6 +113,10 @@ func findIdent(expr ast.Expr) ast.Expr {
 			expr = e.Elt
 		case *ast.ArrayType:
 			expr = e.Elt
+		case *ast.IndexExpr:
+			expr = e.X
+		case *ast.IndexListExpr:
+			expr = e.X
 		case *ast.ChanType:
 			expr = e.Value
 		case *ast.MapType:
@@ -165,6 +159,24 @@ func typeName(expr ast.Expr) string {
 		return "map[" + typeName(e.Key) + "]" + typeName(e.Value)
 	case *ast.SelectorExpr:
 		return typeName(e.X) + "." + e.Sel.Name
+	case *ast.IndexExpr:
+		return typeName(e.X) + "[" + typeName(e.Index) + "]"
+	case *ast.IndexListExpr:
+		var b strings.Builder
+		b.WriteString(typeName(e.X))
+		b.WriteByte('[')
+
+		for i, idx := range e.Indices {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+
+			b.WriteString(typeName(idx))
+		}
+
+		b.WriteByte(']')
+
+		return b.String()
 	default:
 		return fmt.Sprintf("%T", expr)
 	}
