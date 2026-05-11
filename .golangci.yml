@@ -28,7 +28,7 @@ linters:
     - godox
     - goheader
     - gomoddirectives
-    - gomodguard
+    - gomodguard_v2
     - goprintffuncname
     - gosec
     - gosmopolitan
@@ -75,6 +75,8 @@ linters:
     - wsl_v5
     - zerologlint
   settings:
+    goconst:
+      ignore-tests: true
     mnd:
       ignored-numbers:
         - "2"
