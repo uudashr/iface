@@ -75,6 +75,8 @@ linters:
     - wsl_v5
     - zerologlint
   settings:
+    goconst:
+      ignore-tests: true
     mnd:
       ignored-numbers:
         - "2"
