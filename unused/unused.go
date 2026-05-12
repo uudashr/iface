@@ -135,11 +135,21 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 	for name, ts := range ifaceDecls {
 		decl := genDecls[name]
 
-		var node ast.Node
+		var start, end token.Pos
 		if len(decl.Specs) == 1 {
-			node = decl
+			start = decl.Pos()
+			if decl.Doc != nil {
+				start = decl.Doc.Pos()
+			}
+
+			end = decl.End()
 		} else {
-			node = ts
+			start = ts.Pos()
+			if ts.Doc != nil {
+				start = ts.Doc.Pos()
+			}
+
+			end = ts.End()
 		}
 
 		msg := fmt.Sprintf("interface '%s' is declared but not used within the package", name)
@@ -151,8 +161,8 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 					Message: "Remove the unused interface declaration",
 					TextEdits: []analysis.TextEdit{
 						{
-							Pos:     node.Pos(),
-							End:     node.End(),
+							Pos:     start,
+							End:     end,
 							NewText: []byte{},
 						},
 					},

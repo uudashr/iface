@@ -12,8 +12,6 @@ type Runner interface {
 	Run() error
 }
 
-//iface:ignore=other
-
 //iface:ignore=other,unused
 type Server interface {
 	Serve() error
