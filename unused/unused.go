@@ -39,7 +39,16 @@ type runner struct {
 }
 
 func (r *runner) run(pass *analysis.Pass) (any, error) {
-	excludes := strings.Split(r.exclude, ",")
+	var excludes []string
+
+	if r.exclude != "" {
+		for _, pkg := range strings.Split(r.exclude, ",") {
+			if p := strings.TrimSpace(pkg); p != "" {
+				excludes = append(excludes, p)
+			}
+		}
+	}
+
 	if slices.Contains(excludes, pass.Pkg.Path()) {
 		return nil, nil
 	}
