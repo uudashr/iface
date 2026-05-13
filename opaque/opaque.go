@@ -331,6 +331,10 @@ func fromSamePackage(pass *analysis.Pass, typ types.Type) bool {
 }
 
 func removePkgPrefix(typeStr string) string {
+	if len(typeStr) == 0 {
+		return typeStr
+	}
+
 	if typeStr[0] == '*' {
 		return "*" + removePkgPrefix(typeStr[1:])
 	}
