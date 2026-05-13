@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
+	"os"
 	"strings"
 
 	"github.com/uudashr/iface/internal/directive"
@@ -63,8 +64,8 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 		}
 
 		if r.debug {
-			fmt.Printf("Function declaration %s\n", funcDecl.Name.Name)
-			fmt.Printf(" Results len=%d\n", len(funcDecl.Type.Results.List))
+			fmt.Fprintf(os.Stderr, "Function declaration %s\n", funcDecl.Name.Name)
+			fmt.Fprintf(os.Stderr, " Results len=%d\n", len(funcDecl.Type.Results.List))
 		}
 
 		dir := directive.ParseIgnore(funcDecl.Doc)
@@ -90,7 +91,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			typ := pass.TypesInfo.TypeOf(resType)
 
 			if r.debug {
-				fmt.Printf("  [%d] len=%d %v %v %T | %v %T interface=%t\n", i, len(result.Names), result.Names, resType, resType, typ, typ, types.IsInterface(typ))
+				fmt.Fprintf(os.Stderr, "  [%d] len=%d %v %v %T | %v %T interface=%t\n", i, len(result.Names), result.Names, resType, resType, typ, typ, types.IsInterface(typ))
 			}
 
 			if types.IsInterface(typ) && !hasInterfaceReturnType {
@@ -98,9 +99,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			}
 		}
 
-		if r.debug {
-			fmt.Printf("  hasInterface=%t outCount=%d\n", hasInterfaceReturnType, outCount)
-		}
+		r.debugf("  hasInterface=%t outCount=%d\n", hasInterfaceReturnType, outCount)
 
 		if !hasInterfaceReturnType {
 			// skip, since it has no interface return type
@@ -120,7 +119,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 				return false
 			case *ast.ReturnStmt:
 				if r.debug {
-					fmt.Printf("  Return statements %v len=%d\n", n.Results, len(n.Results))
+					fmt.Fprintf(os.Stderr, "  Return statements %v len=%d\n", n.Results, len(n.Results))
 				}
 
 				for i, result := range n.Results {
@@ -139,7 +138,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 								retStmtTypes[i][vTyp] = struct{}{}
 
 								if r.debug {
-									fmt.Printf("          Tuple [%d]: %v %T | %v %T interface=%t\n", i, v, v, vTyp, vTyp, types.IsInterface(vTyp))
+									fmt.Fprintf(os.Stderr, "          Tuple [%d]: %v %T | %v %T interface=%t\n", i, v, v, vTyp, vTyp, types.IsInterface(vTyp))
 								}
 							}
 						default:
@@ -153,7 +152,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 						isNilStmt := isUntypedNil(typ)
 
 						if r.debug {
-							fmt.Printf("        Ident type: %v %T interface=%t, untypedNil=%t\n", typ, typ, types.IsInterface(typ), isNilStmt)
+							fmt.Fprintf(os.Stderr, "        Ident type: %v %T interface=%t, untypedNil=%t\n", typ, typ, types.IsInterface(typ), isNilStmt)
 						}
 
 						if !isNilStmt {
@@ -165,7 +164,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 						typ := pass.TypesInfo.TypeOf(res)
 
 						if r.debug {
-							fmt.Printf("        UnaryExpr type: %v %T interface=%t\n", typ, typ, types.IsInterface(typ))
+							fmt.Fprintf(os.Stderr, "        UnaryExpr type: %v %T interface=%t\n", typ, typ, types.IsInterface(typ))
 						}
 
 						retStmtTypes[i][typ] = struct{}{}
@@ -240,7 +239,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			}
 
 			if r.debug {
-				fmt.Printf("stmtType: %v %T | %v %T\n", stmtTyp, stmtTyp, stmtTyp.Underlying(), stmtTyp.Underlying())
+				fmt.Fprintf(os.Stderr, "stmtType: %v %T | %v %T\n", stmtTyp, stmtTyp, stmtTyp.Underlying(), stmtTyp.Underlying())
 			}
 
 			switch stmtTyp := stmtTyp.(type) {
@@ -343,6 +342,6 @@ func removePkgPrefix(typeStr string) string {
 
 func (r *runner) debugf(format string, a ...any) {
 	if r.debug {
-		fmt.Printf(format, a...)
+		fmt.Fprintf(os.Stderr, format, a...)
 	}
 }
