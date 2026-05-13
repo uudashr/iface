@@ -49,7 +49,10 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 		funcDecl := n.(*ast.FuncDecl)
 
 		if funcDecl.Recv != nil {
-			// skip methods
+			// Skip methods because their return types may be dictated by interface
+			// contracts that the receiver type satisfies. Unlike standalone functions,
+			// methods are often created to fulfill an interface, so the return type
+			// is not a free design choice. Flagging these would produce false positives.
 			return
 		}
 
