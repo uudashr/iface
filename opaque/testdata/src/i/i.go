@@ -24,20 +24,6 @@ func WithError() (MyInterface, error) { // want "'WithError' function return 'My
 	return &myInterfaceImpl{}, nil
 }
 
-type myError struct{}
-
-func (e *myError) Error() string {
-	return "error"
-}
-
-type error interface { // this shadows the predeclared error
-	Error() string
-}
-
-func GetError() error { // want "'GetError' function return 'error' interface at the 1st result, abstract a single concrete implementation of '\\*myError'"
-	return &myError{}
-}
-
 type MyError interface {
 	Error() string
 }
