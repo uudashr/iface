@@ -203,8 +203,10 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 				continue
 			}
 
-			if typ.String() == "error" {
-				// very common case to have return type error
+			errorType := types.Universe.Lookup("error").Type()
+			anyType := types.Universe.Lookup("any").Type()
+
+			if types.Identical(typ, errorType) || types.Identical(typ, anyType) {
 				continue
 			}
 
