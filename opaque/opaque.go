@@ -132,13 +132,13 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 						typ := pass.TypesInfo.TypeOf(res)
 						switch typ := typ.(type) {
 						case *types.Tuple:
-							for i := range typ.Len() {
-								v := typ.At(i)
+							for j := range typ.Len() {
+								v := typ.At(j)
 								vTyp := v.Type()
-								retStmtTypes[i][vTyp] = struct{}{}
+								retStmtTypes[j][vTyp] = struct{}{}
 
 								if r.debug {
-									fmt.Fprintf(os.Stderr, "          Tuple [%d]: %v %T | %v %T interface=%t\n", i, v, v, vTyp, vTyp, types.IsInterface(vTyp))
+									fmt.Fprintf(os.Stderr, "          Tuple [%d]: %v %T | %v %T interface=%t\n", j, v, v, vTyp, vTyp, types.IsInterface(vTyp))
 								}
 							}
 						default:
