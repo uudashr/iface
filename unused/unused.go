@@ -34,6 +34,11 @@ func newAnalyzer() *analysis.Analyzer {
 	return analyzer
 }
 
+type ifaceEntry struct {
+	ts   *ast.TypeSpec
+	decl *ast.GenDecl
+}
+
 type runner struct {
 	debug   bool
 	exclude string
@@ -57,8 +62,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	// Collect all interface type declarations
-	ifaceDecls := make(map[string]*ast.TypeSpec)
-	genDecls := make(map[string]*ast.GenDecl) // ifaceName -> GenDecl
+	ifaces := make(map[string]ifaceEntry)
 
 	nodeFilter := []ast.Node{
 		(*ast.GenDecl)(nil),
@@ -99,14 +103,13 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 				continue
 			}
 
-			ifaceDecls[ts.Name.Name] = ts
-			genDecls[ts.Name.Name] = decl
+			ifaces[ts.Name.Name] = ifaceEntry{ts: ts, decl: decl}
 		}
 	})
 
 	if r.debug {
 		var ifaceNames []string
-		for name := range ifaceDecls {
+		for name := range ifaces {
 			ifaceNames = append(ifaceNames, name)
 		}
 
@@ -124,26 +127,25 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			return
 		}
 
-		ts, ok := ifaceDecls[ident.Name]
+		entry, ok := ifaces[ident.Name]
 		if !ok {
 			return
 		}
 
-		if ts.Pos() == ident.Pos() {
-			// The identifier is the interface type declaration
+		if entry.ts.Pos() == ident.Pos() {
 			return
 		}
 
-		delete(ifaceDecls, ident.Name)
-		delete(genDecls, ident.Name)
+		delete(ifaces, ident.Name)
 	})
 
 	if r.debug {
 		fmt.Fprintf(os.Stderr, "Package %s %s\n", pass.Pkg.Path(), pass.Pkg.Name())
 	}
 
-	for name, ts := range ifaceDecls {
-		decl := genDecls[name]
+	for name, entry := range ifaces {
+		ts := entry.ts
+		decl := entry.decl
 
 		var start, end token.Pos
 		if len(decl.Specs) == 1 {
