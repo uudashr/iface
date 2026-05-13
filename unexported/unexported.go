@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
+	"os"
 	"strings"
 
 	"github.com/uudashr/iface/internal/directive"
@@ -62,7 +63,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 			if r.debug {
 				infoType := pass.TypesInfo.TypeOf(recvType)
-				fmt.Printf(" recvType: %v infoType: %v reflectType: %T\n", recvType, infoType, recvType)
+				fmt.Fprintf(os.Stderr, " recvType: %v infoType: %v reflectType: %T\n", recvType, infoType, recvType)
 			}
 
 			inner := recvType
@@ -249,12 +250,12 @@ func (r *runner) checkType(pass *analysis.Pass, expr ast.Expr, funcDecl *ast.Fun
 
 func (r *runner) debugln(a ...any) {
 	if r.debug {
-		fmt.Println(a...)
+		fmt.Fprintln(os.Stderr, a...)
 	}
 }
 
 func (r *runner) debugf(format string, a ...any) {
 	if r.debug {
-		fmt.Printf(format, a...)
+		fmt.Fprintf(os.Stderr, format, a...)
 	}
 }

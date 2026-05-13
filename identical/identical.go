@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"os"
 	"slices"
 	"strings"
 
@@ -82,16 +83,16 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 			}
 
 			if r.debug {
-				fmt.Println("Interface declaration:", ts.Name.Name, ts.Pos(), len(ifaceType.Methods.List))
+				fmt.Fprintln(os.Stderr, "Interface declaration:", ts.Name.Name, ts.Pos(), len(ifaceType.Methods.List))
 
 				for i, field := range ifaceType.Methods.List {
 					switch ft := field.Type.(type) {
 					case *ast.FuncType:
-						fmt.Printf(" [%d] Field: func %s %T %v\n", i, field.Names[0].Name, ft, field.Pos())
+						fmt.Fprintf(os.Stderr, " [%d] Field: func %s %T %v\n", i, field.Names[0].Name, ft, field.Pos())
 					case *ast.Ident:
-						fmt.Printf(" [%d] Field: iface %s %T %v\n", i, ft.Name, ft, field.Pos())
+						fmt.Fprintf(os.Stderr, " [%d] Field: iface %s %T %v\n", i, ft.Name, ft, field.Pos())
 					default:
-						fmt.Printf(" [%d] Field: unknown %T\n", i, ft)
+						fmt.Fprintf(os.Stderr, " [%d] Field: unknown %T\n", i, ft)
 					}
 				}
 			}
@@ -150,12 +151,12 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 
 func (r *runner) debugln(a ...any) {
 	if r.debug {
-		fmt.Println(a...)
+		fmt.Fprintln(os.Stderr, a...)
 	}
 }
 
 func (r *runner) debugf(format string, a ...any) {
 	if r.debug {
-		fmt.Printf(format, a...)
+		fmt.Fprintf(os.Stderr, format, a...)
 	}
 }

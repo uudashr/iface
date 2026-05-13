@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"os"
 	"slices"
 	"strings"
 
@@ -70,7 +71,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 		}
 
 		if r.debug {
-			fmt.Printf("GenDecl: %v specs=%d\n", decl.Tok, len(decl.Specs))
+			fmt.Fprintf(os.Stderr, "GenDecl: %v specs=%d\n", decl.Tok, len(decl.Specs))
 		}
 
 		if decl.Tok != token.TYPE {
@@ -109,7 +110,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			ifaceNames = append(ifaceNames, name)
 		}
 
-		fmt.Println("Declared interfaces:", ifaceNames)
+		fmt.Fprintln(os.Stderr, "Declared interfaces:", ifaceNames)
 	}
 
 	// Inspect whether the interface is used within the package
@@ -138,7 +139,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 	})
 
 	if r.debug {
-		fmt.Printf("Package %s %s\n", pass.Pkg.Path(), pass.Pkg.Name())
+		fmt.Fprintf(os.Stderr, "Package %s %s\n", pass.Pkg.Path(), pass.Pkg.Name())
 	}
 
 	for name, ts := range ifaceDecls {
@@ -185,12 +186,12 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 func (r *runner) debugln(a ...any) {
 	if r.debug {
-		fmt.Println(a...)
+		fmt.Fprintln(os.Stderr, a...)
 	}
 }
 
 func (r *runner) debugf(format string, a ...any) {
 	if r.debug {
-		fmt.Printf(format, a...)
+		fmt.Fprintf(os.Stderr, format, a...)
 	}
 }
