@@ -1,0 +1,39 @@
+package i
+
+func OnlyError() error {
+	return nil
+}
+
+func OnlyAny() any {
+	return nil
+}
+
+func OnlyInterfaceEmpty() interface{} {
+	return nil
+}
+
+type MyInterface interface {
+	Do()
+}
+
+type myInterfaceImpl struct{}
+
+func (m *myInterfaceImpl) Do() {}
+
+func WithError() (*myInterfaceImpl, error) { // want "'WithError' function return 'MyInterface' interface at the 1st result, abstract a single concrete implementation of '\\*myInterfaceImpl'"
+	return &myInterfaceImpl{}, nil
+}
+
+type MyError interface {
+	Error() string
+}
+
+type myMyError struct{}
+
+func (e *myMyError) Error() string {
+	return "error"
+}
+
+func GetMyError() *myMyError { // want "'GetMyError' function return 'MyError' interface at the 1st result, abstract a single concrete implementation of '\\*myMyError'"
+	return &myMyError{}
+}

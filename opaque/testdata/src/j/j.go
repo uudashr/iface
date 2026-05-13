@@ -1,0 +1,15 @@
+package j
+
+type myError struct{}
+
+func (e *myError) Error() string {
+	return "error"
+}
+
+type error interface { // shadows the predeclared error
+	Error() string
+}
+
+func GetError() error { // want "'GetError' function return 'error' interface at the 1st result, abstract a single concrete implementation of '\\*myError'"
+	return &myError{}
+}
