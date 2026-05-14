@@ -19,5 +19,6 @@ func TestAnalyzer(t *testing.T) {
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "h")
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "i")
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "j")
+	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "k")
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "x")
 }

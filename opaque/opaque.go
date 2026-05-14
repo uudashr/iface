@@ -130,6 +130,8 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 					switch res := result.(type) {
 					case *ast.CallExpr:
+						// Multi-return calls produce a Tuple; unwrap each element to
+						// record types by position. Single-value calls fall to default.
 						r.debugf("       CallExpr Fun: %v %T\n", res.Fun, res.Fun)
 
 						typ := pass.TypesInfo.TypeOf(res)
@@ -149,6 +151,8 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 						}
 
 					case *ast.Ident:
+						// Skip untyped nil — not a concrete type. All other identifiers
+						// (variables, constants, etc.) are recorded as-is.
 						r.debugf("       Ident: %v %T\n", res, res)
 
 						typ := pass.TypesInfo.TypeOf(res)
@@ -161,18 +165,11 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 						if !isNilStmt {
 							retStmtTypes[i][typ] = struct{}{}
 						}
-					case *ast.UnaryExpr:
-						r.debugf("       UnaryExpr X: %v \n", res.X)
-
-						typ := pass.TypesInfo.TypeOf(res)
-
-						if r.debug {
-							fmt.Fprintf(os.Stderr, "        UnaryExpr type: %v %T interface=%t\n", typ, typ, types.IsInterface(typ))
-						}
-
-						retStmtTypes[i][typ] = struct{}{}
 					default:
-						r.debugf("       Unknown: %v %T\n", res, res)
+						// Catches everything else: UnaryExpr (`&foo`), SelectorExpr,
+						// TypeAssertExpr, CompositeLit, etc. pass.TypesInfo.TypeOf(res)
+						// resolves the type correctly regardless of AST node kind.
+						r.debugf("       OtherExpr: %v %T\n", res, res)
 
 						typ := pass.TypesInfo.TypeOf(res)
 						retStmtTypes[i][typ] = struct{}{}
