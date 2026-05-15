@@ -20,5 +20,10 @@ func TestAnalyzer(t *testing.T) {
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "i")
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "j")
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "k")
-	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "x")
+	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "l")
+	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "m")
+	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "n")
+	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "o")
+	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "p")
+	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "z")
 }

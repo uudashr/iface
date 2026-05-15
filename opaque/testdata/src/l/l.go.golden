@@ -1,0 +1,14 @@
+package l
+
+type Server interface {
+	Serve() error
+}
+
+type server struct{}
+
+func (s *server) Serve() error { return nil }
+
+func NewServer() (s *server) { // want "'NewServer' function return 'Server' interface at the 1st result, abstract a single concrete implementation of '\\*server'"
+	s = &server{}
+	return
+}
