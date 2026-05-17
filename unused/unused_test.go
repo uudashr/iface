@@ -7,7 +7,7 @@ import (
 	"golang.org/x/tools/go/analysis/analysistest"
 )
 
-func TestAnalyzer(t *testing.T) {
+func Test(t *testing.T) {
 	err := unused.Analyzer.Flags.Set("exclude", "c")
 	if err != nil {
 		t.Fatal(err)
