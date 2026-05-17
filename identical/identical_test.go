@@ -7,7 +7,7 @@ import (
 	"golang.org/x/tools/go/analysis/analysistest"
 )
 
-func TestAnalyzer(t *testing.T) {
+func Test(t *testing.T) {
 	testdata := analysistest.TestData()
 	analysistest.Run(t, testdata, identical.Analyzer, "a")
 	analysistest.Run(t, testdata, identical.Analyzer, "b")

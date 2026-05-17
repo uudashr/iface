@@ -7,7 +7,17 @@ import (
 	"golang.org/x/tools/go/analysis/analysistest"
 )
 
-func TestAnalyzer(t *testing.T) {
+func Test(t *testing.T) {
+	testdata := analysistest.TestData()
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "a")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "agroup")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "agroupdoc")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "agroupsingle")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "b")
+	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "d")
+}
+
+func TestExclusion(t *testing.T) {
 	err := unused.Analyzer.Flags.Set("exclude", "c")
 	if err != nil {
 		t.Fatal(err)
@@ -15,10 +25,5 @@ func TestAnalyzer(t *testing.T) {
 
 	testdata := analysistest.TestData()
 	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "a")
-	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "agroup")
-	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "agroupdoc")
-	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "agroupsingle")
-	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "b")
 	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "c")
-	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "d")
 }

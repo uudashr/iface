@@ -7,7 +7,7 @@ import (
 	"golang.org/x/tools/go/analysis/analysistest"
 )
 
-func TestAnalyzer(t *testing.T) {
+func Test(t *testing.T) {
 	testdata := analysistest.TestData()
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "a")
 	analysistest.RunWithSuggestedFixes(t, testdata, opaque.Analyzer, "b")
