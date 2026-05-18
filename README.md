@@ -2,7 +2,7 @@
 
 # iface
 
-`iface` is a linter designed to identify the incorrect use of interfaces in Go code, helping developers avoid interface pollution. By detecting unnecessary or poorly implemented interfaces, `iface` ensures your Go code remains clean, efficient, and maintainable.
+`iface` is a linter designed to identify the incorrect use of interfaces in Go code, helping developers avoid **interface pollution**. By detecting unnecessary or poorly implemented interfaces, `iface` ensures your Go code remains clean, efficient, and maintainable.
 
 It consists of several analyzers:
 1. `unused`: Detects interfaces which are not used anywhere in the same package where they are defined.
@@ -37,6 +37,13 @@ ifacecheck help
 # or
 ifacecheck help <analyzer-name>
 ```
+
+
+## Golangci-lint
+
+The analyzers are also available in [golangci-lint](https://golangci-lint.run/). It is sufficient to use them via golangci-lint. You can enable them by adding [iface](https://golangci-lint.run/docs/linters/configuration/#iface) in the settings.
+
+By default it only enables the `identical` analyzer, you need to enable them all to get the best of interface pollution detection.
 
 ## Exclusion
 
