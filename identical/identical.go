@@ -15,7 +15,7 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-// Analyzer is the analysis pass for detecting identical interfaces.
+// Analyzer detects interfaces within the same package that have identical methods or type constraints.
 var Analyzer = newAnalyzer()
 
 func newAnalyzer() *analysis.Analyzer {
