@@ -14,7 +14,7 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-// Analyzer detects unused interfaces in the package.
+// Analyzer detects interfaces which are not used anywhere in the same package where they are defined.
 var Analyzer = newAnalyzer()
 
 func newAnalyzer() *analysis.Analyzer {

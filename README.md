@@ -49,7 +49,7 @@ By default it only enables the `identical` analyzer, you need to enable them all
 
 ### Package exclusion
 
-We encourage to use default behavior and put effot to follow the rules. But, for some reason rules are not applicable. Due to this we can exclude specific package to be scanned by the analyzers. Use `-unused.exclude` flag and currently only `unused` has this feature. See help for more information:
+We encourage using the default behavior and making an effort to follow the rules. However, in some cases the rules may not apply. Due to this we can exclude specific package to be scanned by the analyzers. Use `-unused.exclude` flag and currently only `unused` has this feature. See help for more information:
 
 Example usage: 
 ```sh
@@ -58,10 +58,10 @@ ifacecheck -unused.exclude=github.com/example/log ./...
 
 ### Ignore Directive
 
-Exclusion can be done by using directive in the code by placing the `//iface:ignore` to ignore the code from being scanned by the analyzer. Example:
+Exclusion can be done by placing the `//iface:ignore` directive in the code to prevent it from being scanned by the analyzer. Example:
 
-1. `iface:ignore` to ignore the from all analyzers.
-2. `iface:ignore=[analyzer names]` which names is comma separators to exclude from defined names only. Ex: 
+1. `iface:ignore` to ignore from all analyzers.
+2. `iface:ignore=[analyzer names]` a comma-separated list of analyzer names to exclude from specific analyzers. Ex: 
     - `iface:ignore=unused` ignore from `unused` analyzer.
     - `iface:ignore=unused,identical` ignore from `unused` and `identical` analyzers.
 
@@ -70,7 +70,7 @@ Note: use exclusion with careful consideration.
 
 ## Background
 
-One of Go's powerful features is interfaces. However, sometimes people misuse the interfaces event though the code works but the code polluted with interfaces.
+One of Go's powerful features is interfaces. However, sometimes people misuse the interfaces even though the code works but the code becomes polluted with interfaces.
 
 The following quotes inspired the creation of these analyzers:
 

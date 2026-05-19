@@ -14,7 +14,7 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-// Analyzer is the analysis pass for detecting opaque interface returns.
+// Analyzer detects functions that return an interface type, but only ever return a single concrete implementation.
 var Analyzer = newAnalyzer()
 
 func newAnalyzer() *analysis.Analyzer {
