@@ -82,6 +82,11 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			return
 		}
 
+		blockDir := directive.ParseIgnore(decl.Doc)
+		if blockDir != nil && blockDir.ShouldIgnore(pass.Analyzer.Name) {
+			return
+		}
+
 		for i, spec := range decl.Specs {
 			r.debugf(" spec[%d]: %v %T\n", i, spec, spec)
 
@@ -95,11 +100,10 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 				continue
 			}
 
-			r.debugln(" Interface type declaration:", ts.Name.Name, ts.Pos())
+			r.debugln("  -> Interface type declaration:", ts.Name.Name, ts.Pos())
 
-			dir := directive.ParseIgnore(decl.Doc)
+			dir := directive.ParseIgnore(ts.Doc)
 			if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
-				// skip due to ignore directive
 				continue
 			}
 
