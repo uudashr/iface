@@ -87,14 +87,14 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 			if r.debug {
 				fmt.Fprintln(os.Stderr, "  -> Interface declaration:", ts.Name.Name, ts.Pos(), len(ifaceType.Methods.List))
 
-				for i, field := range ifaceType.Methods.List {
+				for j, field := range ifaceType.Methods.List {
 					switch ft := field.Type.(type) {
 					case *ast.FuncType:
-						fmt.Fprintf(os.Stderr, "  [%d] Field: func %s %T %v\n", i, field.Names[0].Name, ft, field.Pos())
+						fmt.Fprintf(os.Stderr, "  [%d] Field: func %s %T %v\n", j, field.Names[0].Name, ft, field.Pos())
 					case *ast.Ident:
-						fmt.Fprintf(os.Stderr, "  [%d] Field: iface %s %T %v\n", i, ft.Name, ft, field.Pos())
+						fmt.Fprintf(os.Stderr, "  [%d] Field: iface %s %T %v\n", j, ft.Name, ft, field.Pos())
 					default:
-						fmt.Fprintf(os.Stderr, "  [%d] Field: unknown %T\n", i, ft)
+						fmt.Fprintf(os.Stderr, "  [%d] Field: unknown %T\n", j, ft)
 					}
 				}
 			}
