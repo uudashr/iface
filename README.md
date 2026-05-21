@@ -6,9 +6,10 @@
 
 It consists of several analyzers:
 1. `unused`: Detects interfaces which are not used anywhere in the same package where they are defined.
-2. `identical`: Detects interfaces within the same package that have identical methods or type constraints.
-3. `opaque`: Detects functions that return an interface type, but only ever return a single concrete implementation.
-4. `unexported`: Detects interfaces which are not exported but are used as parameters or return values in exported functions or methods.
+2. `unusedmethod`: Detects interface methods that are never used anywhere in the same package where they are defined.
+3. `identical`: Detects interfaces within the same package that have identical methods or type constraints.
+4. `opaque`: Detects functions that return an interface type, but only ever return a single concrete implementation.
+5. `unexported`: Detects interfaces which are not exported but are used as parameters or return values in exported functions or methods.
 
 ## Usage
 
@@ -20,6 +21,7 @@ go install github.com/uudashr/iface/cmd/ifacecheck@latest
 To install individual linter, use the following command:
 ```sh
 go install github.com/uudashr/iface/unused/cmd/unusediface@latest
+go install github.com/uudashr/iface/unusedmethod/cmd/unusedmethodiface@latest
 go install github.com/uudashr/iface/identical/cmd/identicaliface@latest
 go install github.com/uudashr/iface/opaque/cmd/opaqueiface@latest
 go install github.com/uudashr/iface/unexported/cmd/unexportediface@latest
@@ -49,11 +51,12 @@ By default it only enables the `identical` analyzer, you need to enable them all
 
 ### Package exclusion
 
-We encourage using the default behavior and making an effort to follow the rules. However, in some cases the rules may not apply. Due to this we can exclude specific package to be scanned by the analyzers. Use `-unused.exclude` flag and currently only `unused` has this feature. See help for more information:
+We encourage using the default behavior and making an effort to follow the rules. However, in some cases the rules may not apply. Due to this we can exclude specific package to be scanned by the analyzers. Use `-unused.exclude` or `-unusedmethod.exclude` flag. See help for more information:
 
 Example usage: 
 ```sh
 ifacecheck -unused.exclude=github.com/example/log ./...
+ifacecheck -unusedmethod.exclude=github.com/example/log ./...
 ```
 
 ### Ignore Directive
