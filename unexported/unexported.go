@@ -48,11 +48,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 
 		r.debugln("FuncDecl:", funcDecl.Name.Name)
 
-		dir := directive.ParseIgnore(funcDecl.Doc)
-		if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
-			// skip ignored function
-			r.debugln(" skip ignored")
-
+		if directive.ShouldIgnore(funcDecl.Doc, pass.Analyzer.Name) {
 			return
 		}
 
