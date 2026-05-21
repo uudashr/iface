@@ -22,6 +22,13 @@ func (e *ExportedType) ReadAll(r unexportedReader) ([]byte, error) { // want "un
 	return buf, err
 }
 
+//iface:ignore=unexported
+func (e *ExportedType) ReadAllIgnored(r unexportedReader) ([]byte, error) {
+	buf := make([]byte, 1024)
+	_, err := r.Read(buf)
+	return buf, err
+}
+
 // 2. Method with exported arg type interface
 func (e *ExportedType) WriteHello(w ExportedWriter) error {
 	_, err := w.Write([]byte("hello"))
@@ -30,6 +37,11 @@ func (e *ExportedType) WriteHello(w ExportedWriter) error {
 
 // 3. Method with unexported return type interface
 func (e *ExportedType) NewUnexportedReader() unexportedReader { // want "unexported interface 'unexportedReader' used as return value in exported method 'ExportedType.NewUnexportedReader'"
+	return nil // stub
+}
+
+//iface:ignore=unexported
+func (e *ExportedType) NewUnexportedReaderIgnored() unexportedReader {
 	return nil // stub
 }
 

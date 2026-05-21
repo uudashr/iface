@@ -63,8 +63,7 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 			return
 		}
 
-		blockDir := directive.ParseIgnore(decl.Doc)
-		if blockDir != nil && blockDir.ShouldIgnore(pass.Analyzer.Name) {
+		if directive.ShouldIgnore(decl.Doc, pass.Analyzer.Name) {
 			return
 		}
 
@@ -99,8 +98,7 @@ func (r *runner) run(pass *analysis.Pass) (interface{}, error) {
 				}
 			}
 
-			dir := directive.ParseIgnore(ts.Doc)
-			if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
+			if directive.ShouldIgnore(ts.Doc, pass.Analyzer.Name) {
 				continue
 			}
 

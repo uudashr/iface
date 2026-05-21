@@ -72,9 +72,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			fmt.Fprintf(os.Stderr, " Results len=%d\n", len(funcDecl.Type.Results.List))
 		}
 
-		dir := directive.ParseIgnore(funcDecl.Doc)
-		if dir != nil && dir.ShouldIgnore(pass.Analyzer.Name) {
-			// skip ignored function
+		if directive.ShouldIgnore(funcDecl.Doc, pass.Analyzer.Name) {
 			return
 		}
 
