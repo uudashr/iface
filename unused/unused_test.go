@@ -15,6 +15,7 @@ func Test(t *testing.T) {
 	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "agroupsingle")
 	analysistest.Run(t, testdata, unused.Analyzer, "b")
 	analysistest.RunWithSuggestedFixes(t, testdata, unused.Analyzer, "d")
+	analysistest.Run(t, testdata, unused.Analyzer, "e")
 }
 
 func TestExclusion(t *testing.T) {
