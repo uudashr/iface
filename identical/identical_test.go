@@ -9,11 +9,10 @@ import (
 
 func Test(t *testing.T) {
 	testdata := analysistest.TestData()
-	analysistest.Run(t, testdata, identical.Analyzer, "a")
-	analysistest.Run(t, testdata, identical.Analyzer, "b")
-	analysistest.Run(t, testdata, identical.Analyzer, "c")
-	analysistest.Run(t, testdata, identical.Analyzer, "d")
-	analysistest.Run(t, testdata, identical.Analyzer, "e")
-	analysistest.Run(t, testdata, identical.Analyzer, "f")
-	analysistest.Run(t, testdata, identical.Analyzer, "g")
+	analysistest.Run(t, testdata, identical.Analyzer,
+		"basic",
+		"embedded",
+		"typeconstraints",
+		"typedefalias",
+		"ignoredirective")
 }
