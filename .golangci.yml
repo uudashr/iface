@@ -36,7 +36,6 @@ linters:
     - importas
     - interfacebloat
     - intrange
-    - ireturn
     - loggercheck
     - makezero
     - mirror
