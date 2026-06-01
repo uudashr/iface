@@ -1,0 +1,29 @@
+package ignoredirective
+
+//iface:ignore=unused
+type MessageHandler interface {
+	HandleMessage(msg string) error
+}
+
+type (
+	//iface:ignore=unused
+	Executor interface {
+		Execute() error
+	}
+
+	Job struct {
+		Name string
+	}
+)
+
+//iface:ignore=unused
+type (
+	Writer interface {
+		Write(b []byte) error
+	}
+
+	Reader interface {
+		Read() ([]byte, error)
+	}
+)
+
