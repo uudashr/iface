@@ -108,6 +108,7 @@ func findIdent(expr ast.Expr) ast.Expr {
 		case *ast.Ident, *ast.SelectorExpr:
 			return e
 		default:
+			// should not happen
 			return nil
 		}
 	}
