@@ -9,6 +9,9 @@ import (
 
 func Test(t *testing.T) {
 	testdata := analysistest.TestData()
-	analysistest.Run(t, testdata, unexported.Analyzer, "a")
-	analysistest.Run(t, testdata, unexported.Analyzer, "b")
+	analysistest.Run(t, testdata, unexported.Analyzer,
+		"fun",
+		"method",
+		"ignoredirective",
+		"typeparams")
 }
