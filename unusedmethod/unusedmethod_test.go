@@ -8,22 +8,17 @@ import (
 )
 
 func Test(t *testing.T) {
-	testdata := analysistest.TestData()
-	analysistest.RunWithSuggestedFixes(t, testdata, unusedmethod.Analyzer, "a")
-	analysistest.Run(t, testdata, unusedmethod.Analyzer, "b")
-	analysistest.Run(t, testdata, unusedmethod.Analyzer, "c")
-	analysistest.Run(t, testdata, unusedmethod.Analyzer, "d")
-	analysistest.Run(t, testdata, unusedmethod.Analyzer, "e")
-	analysistest.Run(t, testdata, unusedmethod.Analyzer, "f")
-}
-
-func TestExclusion(t *testing.T) {
-	err := unusedmethod.Analyzer.Flags.Set("exclude", "g")
+	err := unusedmethod.Analyzer.Flags.Set("exclude", "excludepkg")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	testdata := analysistest.TestData()
-	analysistest.RunWithSuggestedFixes(t, testdata, unusedmethod.Analyzer, "a")
-	analysistest.Run(t, testdata, unusedmethod.Analyzer, "g")
+	analysistest.RunWithSuggestedFixes(t, testdata, unusedmethod.Analyzer,
+		"basic")
+
+	analysistest.Run(t, testdata, unusedmethod.Analyzer,
+		"excludepkg",
+		"methodref",
+		"methodexpr")
 }
