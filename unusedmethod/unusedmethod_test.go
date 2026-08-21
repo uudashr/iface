@@ -20,5 +20,6 @@ func Test(t *testing.T) {
 	analysistest.Run(t, testdata, unusedmethod.Analyzer,
 		"excludepkg",
 		"methodref",
-		"methodexpr")
+		"methodexpr",
+		"concrete")
 }
