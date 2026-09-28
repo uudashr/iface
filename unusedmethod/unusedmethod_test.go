@@ -21,5 +21,6 @@ func Test(t *testing.T) {
 		"excludepkg",
 		"methodref",
 		"methodexpr",
-		"concrete")
+		"concrete",
+		"typeparams")
 }
