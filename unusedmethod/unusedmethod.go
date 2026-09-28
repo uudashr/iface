@@ -124,7 +124,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 					}
 
 					if fn, ok := obj.(*types.Func); ok {
-						unusedMethods[fn] = methodEntry{
+						unusedMethods[fn.Origin()] = methodEntry{
 							ifaceName: ts.Name.Name,
 							field:     field,
 						}
@@ -166,7 +166,7 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			return
 		}
 
-		delete(unusedMethods, fn)
+		delete(unusedMethods, fn.Origin())
 	})
 
 	if r.debug {
