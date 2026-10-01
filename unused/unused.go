@@ -23,7 +23,7 @@ func newAnalyzer() *analysis.Analyzer {
 
 	analyzer := &analysis.Analyzer{
 		Name:     "unused",
-		Doc:      "Detects interfaces which are not used anywhere in the same package where they are defined.",
+		Doc:      "Detects interfaces which are not used anywhere in the same package where they are defined. Exported interfaces are reported without a suggested fix, since they may be used by other packages.",
 		URL:      "https://pkg.go.dev/github.com/uudashr/iface/unused",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Run:      r.run,
@@ -167,28 +167,32 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 		ts := entry.ts
 		decl := entry.decl
 
-		var start, end token.Pos
-		if len(decl.Specs) == 1 {
-			start = decl.Pos()
-			if decl.Doc != nil {
-				start = decl.Doc.Pos()
-			}
-
-			end = decl.End()
-		} else {
-			start = ts.Pos()
-			if ts.Doc != nil {
-				start = ts.Doc.Pos()
-			}
-
-			end = ts.End()
-		}
-
 		msg := fmt.Sprintf("interface '%s' is declared but not used within the package", typeName.Name())
-		pass.Report(analysis.Diagnostic{
+
+		diag := analysis.Diagnostic{
 			Pos:     ts.Pos(),
 			Message: msg,
-			SuggestedFixes: []analysis.SuggestedFix{
+		}
+
+		if !typeName.Exported() {
+			var start, end token.Pos
+			if len(decl.Specs) == 1 {
+				start = decl.Pos()
+				if decl.Doc != nil {
+					start = decl.Doc.Pos()
+				}
+
+				end = decl.End()
+			} else {
+				start = ts.Pos()
+				if ts.Doc != nil {
+					start = ts.Doc.Pos()
+				}
+
+				end = ts.End()
+			}
+
+			diag.SuggestedFixes = []analysis.SuggestedFix{
 				{
 					Message: "Remove the unused interface declaration",
 					TextEdits: []analysis.TextEdit{
@@ -199,8 +203,10 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 						},
 					},
 				},
-			},
-		})
+			}
+		}
+
+		pass.Report(diag)
 	}
 
 	return nil, nil
