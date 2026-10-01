@@ -15,6 +15,17 @@ type Logger interface {
 	Error(msg string, args ...any)
 }
 
+// store is unexported; only its unexported method may be removed automatically.
+type store interface {
+	put(key, value string) error // want "^method 'put\\(\\)' is declared on interface 'store' but not used within the package$"
+	Get(key string) (string, error)
+	Set(key, value string) error // want "^method 'Set\\(\\)' is declared on interface 'store' but not used within the package$"
+}
+
+func UseStore(s store) (string, error) {
+	return s.Get("key")
+}
+
 //iface:ignore=unusedmethod
 type Meter interface {
 	CountInc(name string, val int, attrs map[string]any)
