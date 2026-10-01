@@ -81,3 +81,19 @@ func Add(a, b int) Calculator {
 type Writer interface { // want "^interface 'Writer' is declared but not used within the package$"
 	Write(b []byte) error
 }
+
+// unexported unused interface, single declaration
+type sender interface { // want "^interface 'sender' is declared but not used within the package$"
+	send(msg string) error
+}
+
+// unexported unused interface, grouped declaration
+type (
+	scheduler interface { // want "^interface 'scheduler' is declared but not used within the package$"
+		schedule() error
+	}
+
+	WorkItem struct {
+		ID int
+	}
+)

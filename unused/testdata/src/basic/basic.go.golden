@@ -44,8 +44,16 @@ func CommitAll(msgs []any) error {
 // grouped type declaration
 
 type (
+	Executor interface { // want "^interface 'Executor' is declared but not used within the package$"
+		Execute() error
+	}
+
 	Job struct {
 		Name string
+	}
+
+	Runner interface { // want "^interface 'Runner' is declared but not used within the package$"
+		Run() error
 	}
 )
 
@@ -70,3 +78,13 @@ func Add(a, b int) Calculator {
 
 // -- single type declaration
 
+type Writer interface { // want "^interface 'Writer' is declared but not used within the package$"
+	Write(b []byte) error
+}
+
+// unexported unused interface, grouped declaration
+type (
+	WorkItem struct {
+		ID int
+	}
+)
