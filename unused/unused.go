@@ -174,42 +174,43 @@ func (r *runner) run(pass *analysis.Pass) (any, error) {
 			Message: msg,
 		}
 
-		if !typeName.Exported() {
-			var start, end token.Pos
-			if len(decl.Specs) == 1 {
-				start = decl.Pos()
-				if decl.Doc != nil {
-					start = decl.Doc.Pos()
-				}
-
-				end = decl.End()
-			} else {
-				start = ts.Pos()
-				if ts.Doc != nil {
-					start = ts.Doc.Pos()
-				}
-
-				end = ts.End()
-			}
-
-			diag.SuggestedFixes = []analysis.SuggestedFix{
-				{
-					Message: "Remove the unused interface declaration",
-					TextEdits: []analysis.TextEdit{
-						{
-							Pos:     start,
-							End:     end,
-							NewText: []byte{},
-						},
-					},
-				},
-			}
+		if fix := removalFix(decl, ts, typeName); fix != nil {
+			diag.SuggestedFixes = []analysis.SuggestedFix{*fix}
 		}
 
 		pass.Report(diag)
 	}
 
 	return nil, nil
+}
+
+func removalFix(decl *ast.GenDecl, ts *ast.TypeSpec, typeName *types.TypeName) *analysis.SuggestedFix {
+	if typeName.Exported() {
+		return nil
+	}
+
+	start, end := decl.Pos(), decl.End()
+	doc := decl.Doc
+
+	if len(decl.Specs) > 1 {
+		start, end = ts.Pos(), ts.End()
+		doc = ts.Doc
+	}
+
+	if doc != nil {
+		start = doc.Pos()
+	}
+
+	return &analysis.SuggestedFix{
+		Message: "Remove the unused interface declaration",
+		TextEdits: []analysis.TextEdit{
+			{
+				Pos:     start,
+				End:     end,
+				NewText: []byte{},
+			},
+		},
+	}
 }
 
 func (r *runner) debugln(a ...any) {
