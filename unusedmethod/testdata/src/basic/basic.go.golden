@@ -6,12 +6,23 @@ import (
 )
 
 type Logger interface {
+	Debug(msg string, args ...any) // want "^method 'Debug\\(\\)' is declared on interface 'Logger' but not used within the package$"
 	Info(msg string, args ...any)
 
 	Warn(msg string, args ...any) //iface:ignore=unusedmethod
 
 	//iface:ignore=unusedmethod
 	Error(msg string, args ...any)
+}
+
+// store is unexported; only its unexported method may be removed automatically.
+type store interface {
+	Get(key string) (string, error)
+	Set(key, value string) error // want "^method 'Set\\(\\)' is declared on interface 'store' but not used within the package$"
+}
+
+func UseStore(s store) (string, error) {
+	return s.Get("key")
 }
 
 //iface:ignore=unusedmethod
